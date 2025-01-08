@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id                 String    @id @default(cuid())
+  userId             String    @unique @map("user_id")
+  type               String    @map("provider_type")  
+  provider           String    @map("provider_id")  
+  providerAccountId  String    @map("provider_account_id")
+  refreshToken       String?   @db.Text
+  accessToken        String?   @db.Text @map("access_token")
+  accessTokenExpires DateTime?
+
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?   @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  account       Account?
+  couple        Couple?
+}
+
+model Couple {
+  id            String  @id @default(cuid())
+  link          String?
+  userId        String  @unique
+  name          String
+  about         String  @db.Text
+  picture       String? @db.Text
+  date          String
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  publications  Publication[]
+  songs         Song[]
+  pictures      Picture[]
+  
+  user          User    @relation(fields: [userId], references: [id])
+}
+
+model Publication {
+  id            String @id @default(cuid())
+  coupleId      String
+  message       String
+  createdAt     DateTime  @default(now())
+
+  couple        Couple    @relation(fields: [coupleId], references: [id])
+}
+
+model Song {
+  id      String @id @default(cuid())
+  url     String
+  coupleId      String
+  couple        Couple    @relation(fields: [coupleId], references: [id])
+}
+
+model Picture {
+  id            String @id @default(cuid())
+  url           String
+  coupleId      String
+  couple        Couple    @relation(fields: [coupleId], references: [id])
+}
