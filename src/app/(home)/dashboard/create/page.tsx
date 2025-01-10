@@ -13,7 +13,7 @@ export interface Form {
   date: string;
   about: string;
   picture: File | null | undefined;
-  pictures: { id: string | null; file: File }[] | [];
+  pictures: File[] | [];
 }
 
 export default function NewPage() {
@@ -57,7 +57,7 @@ export default function NewPage() {
 
     if (form.pictures.length > 0) {
       form.pictures.forEach((file) => {
-        formData.append(`pictures`, JSON.stringify(file));
+        formData.append(`pictures`, file);
       });
     }
 

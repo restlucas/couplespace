@@ -86,13 +86,7 @@ export function PicturesGrid({ pictures, setForm }: PictureGridProps) {
 
     setForm((prevState) => ({
       ...prevState,
-      pictures: [
-        ...prevState.pictures,
-        ...files.map((file) => ({
-          id: null,
-          file,
-        })),
-      ],
+      pictures: [...prevState.pictures, ...files],
     }));
 
     processFiles(files);
@@ -101,9 +95,7 @@ export function PicturesGrid({ pictures, setForm }: PictureGridProps) {
   const removeImage = (imageName: string) => {
     setForm((prevState) => ({
       ...prevState,
-      pictures: prevState.pictures.filter(
-        (image) => image.file.name !== imageName
-      ),
+      pictures: prevState.pictures.filter((image) => image.name !== imageName),
     }));
 
     const filteredImages = imagesPreview.filter(

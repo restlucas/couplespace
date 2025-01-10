@@ -151,23 +151,17 @@ async function createPage(request: Request) {
       },
     });
 
-    const pictures = formData
-      .getAll("pictures")
-      .map((picture) => JSON.parse(picture as string));
+    const pictures = formData.getAll("pictures");
 
     await Promise.all(
       pictures.map(async (picture) => {
-        if (picture.file instanceof File) {
+        if (picture instanceof File) {
           try {
-            const imageUrl = await uploadImage(
-              coupleId,
-              "gallery",
-              picture.file
-            );
+            const imageUrl = await uploadImage(coupleId, "gallery", picture);
 
             await prisma.picture.create({
               data: {
-                name: picture.file.name,
+                name: picture.name,
                 url: imageUrl,
                 coupleId,
               },
@@ -179,7 +173,7 @@ async function createPage(request: Request) {
             );
           }
         } else {
-          console.warn("Invalid file:", picture.file);
+          console.warn("Invalid file:", picture);
         }
       })
     );
