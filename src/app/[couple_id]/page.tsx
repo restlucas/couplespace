@@ -2,6 +2,7 @@ import { getCoupleDetails } from "@/services/couple";
 import { Presentation } from "./presentation";
 import { BaseGallery } from "@/contexts/CoupleContext";
 import { Content } from "./content";
+import Link from "next/link";
 
 type PageProps = {
   params: Promise<{ couple_id: string }>;
@@ -34,7 +35,17 @@ export default async function CouplePage({ params }: PageProps) {
   });
 
   if (!details) {
-    return <div className="w-hull h-full">Error on fetch page</div>;
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="flex flex-col gap-2 items-center justify-center h-[200px] w-[300px] bg-foreground rounded-md p-4">
+          <p className="font-bold text-lg">Not Found</p>
+          <span>Error on fetch page</span>
+          <Link href="/" className="underline text-sm">
+            Get back
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const { name, date, picture, about, ...content } = details as CouplePageProps;

@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { LoginOptions } from "./options";
+
+export const metadata: Metadata = {
+  title: "Couplespace | Login",
+  description: "Guarde seu amor!",
+};
 
 export default function Login() {
   return (

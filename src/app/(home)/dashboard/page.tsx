@@ -3,6 +3,12 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { PageOptions } from "./page-options";
 import { getCouple } from "@/services/couple";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Couplespace | Dashboard",
+  description: "Guarde seu amor!",
+};
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
