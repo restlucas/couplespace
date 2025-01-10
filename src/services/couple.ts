@@ -131,3 +131,28 @@ export const updatePage = async (formData: FormData) => {
     }
   }
 };
+
+export const sendQrCode = async (userId: string) => {
+  try {
+    const response = await fetch("/api/qrcode", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
+
+    const data = response.json();
+    return data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on sending QrCode:", error);
+      return {
+        type: "error",
+        message: "Error on sending QrCode",
+      };
+    } else {
+      console.error("Unknown error", error);
+    }
+  }
+};

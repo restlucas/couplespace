@@ -1,5 +1,6 @@
 "use client";
 
+import { sendQrCode } from "@/services/couple";
 import { Eye, PencilSimple, Plus, QrCode } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +31,11 @@ export function PageOptions({ user, page }: PageOptionsProps) {
   if (!page) {
     router.push(`/dashboard/create?userId=${user.id}`);
   }
+
+  const handleQrCode = async () => {
+    const response = await sendQrCode(user.id);
+    console.log(response);
+  };
 
   return (
     <div className="space-y-8">
@@ -72,7 +78,10 @@ export function PageOptions({ user, page }: PageOptionsProps) {
           <Eye size={20} />
           <span>Visualizar</span>
         </Link>
-        <button className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold">
+        <button
+          onClick={handleQrCode}
+          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
+        >
           <QrCode size={20} />
           <span>Reenviar QR Code</span>
         </button>
