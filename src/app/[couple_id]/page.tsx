@@ -3,7 +3,11 @@ import { Presentation } from "./presentation";
 import { BaseGallery } from "@/contexts/CoupleContext";
 import { Content } from "./content";
 
-export interface CouplePageProps {
+type PageProps = {
+  params: Promise<{ couple_id: string }>;
+};
+
+export type CouplePageProps = {
   id: string;
   link: string;
   name: string;
@@ -19,22 +23,18 @@ export interface CouplePageProps {
     | [];
   songs: BaseGallery[] | [];
   pictures: BaseGallery[] | [];
-}
+};
 
-export default async function CouplePage({
-  params,
-}: {
-  params: { couple_id: string };
-}) {
-  const coupleId = params.couple_id;
+export default async function CouplePage({ params }: PageProps) {
+  const couple_id = (await params).couple_id;
 
   const details = await getCoupleDetails({
     key: "coupleId",
-    value: coupleId,
+    value: couple_id,
   });
 
   if (!details) {
-    throw new Error("Couple details not found");
+    return <div className="w-hull h-full">Error on fetch page</div>;
   }
 
   const { name, date, picture, about, ...content } = details as CouplePageProps;
