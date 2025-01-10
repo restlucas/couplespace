@@ -41,13 +41,9 @@ export default async function CouplePage({
   };
 
   return (
-    <>
-      <div className="h-[20vh] bg-pink-neutral" />
-
-      <div className="mb-12">
-        <Presentation data={presentation} />
-        <Content data={content} />
-      </div>
-    </>
+    <div className="mb-12">
+      <Presentation data={presentation} />
+      <Content data={content} />
+    </div>
   );
 }

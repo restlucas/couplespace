@@ -53,7 +53,7 @@ export default function NewPublicationPage() {
         </Link>
         <button
           form="newPublicationForm"
-          className="flex-1 sm:flex-none h-10 w-32 rounded-md bg-gradient-to-r from-violet-500 to-blue-500 font-bold"
+          className="flex-1 sm:flex-none h-10 w-32 rounded-md bg-gradient-to-r from-rose to-blue-clean font-bold"
         >
           {isLoading ? (
             <div className="flex w-full items-center justify-center">

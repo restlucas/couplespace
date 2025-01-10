@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Bree_Serif } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/providers";
 
-const robotoSans = Roboto({
-  variable: "--font-roboto-sans",
-  weight: "500",
+const bree_serif = Bree_Serif({
+  variable: "--font-bree-serif-sans",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${robotoSans.variable} antialiased text-white bg-foreground flex h-screen w-screen flex-col overflow-x-hidden`}
+        className={`${bree_serif.variable} text-white antialiased bg-gradient-to-r from-rose to-blue-clean flex h-screen w-screen flex-col overflow-x-hidden `}
       >
         <Providers>{children}</Providers>
       </body>

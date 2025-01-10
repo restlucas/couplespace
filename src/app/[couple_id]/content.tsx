@@ -60,13 +60,13 @@ function MobileLayout() {
   return (
     <div className="w-full block lg:hidden">
       <div className="flex w-full items-center justify-center rounded-full h-14 mb-8">
-        <div className="flex items-center justify-center rounded-full border overflow-hidden">
+        <div className="flex items-center justify-center rounded-full overflow-hidden">
           <button
             type="button"
             id="feed"
             onClick={() => handleOption("feed")}
             className={`group px-5 py-3 flex items-center justify-center  ${
-              selectedOption === "feed" ? "bg-pink-normal" : "bg-[#243151]"
+              selectedOption === "feed" ? "bg-foreground" : ""
             }`}
           >
             <List size={20} weight="bold" color="#ffffff" />
@@ -76,7 +76,7 @@ function MobileLayout() {
             id="gallery"
             onClick={() => handleOption("gallery")}
             className={`group px-5 py-3 flex items-center justify-center ${
-              selectedOption === "gallery" ? "bg-pink-normal" : "bg-[#243151]"
+              selectedOption === "gallery" ? "bg-foreground" : ""
             }`}
           >
             <Picture size={20} weight="bold" color="#ffffff" />

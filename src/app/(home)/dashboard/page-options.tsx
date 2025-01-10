@@ -37,7 +37,7 @@ export function PageOptions({ user, page }: PageOptionsProps) {
         Olá, <span className="font-bold">{user.name}</span>
       </h3>
 
-      <h2 className="text-lg font-semibold mb-4">Minha página</h2>
+      <h2 className="text-lg font-semibold">Minha página</h2>
 
       <div>
         <p className="font-semibold mb-2">Link</p>
@@ -52,14 +52,14 @@ export function PageOptions({ user, page }: PageOptionsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 justify-center gap-2">
         <Link
           href={`/dashboard/new-publication?userId=${user.id}`}
-          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground"
+          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
         >
           <Plus size={20} />
           <span>Nova publicação</span>
         </Link>
         <Link
           href={`/dashboard/edit?userId=${user.id}`}
-          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground"
+          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
         >
           <PencilSimple size={20} />
           <span>Editar página</span>
@@ -67,12 +67,12 @@ export function PageOptions({ user, page }: PageOptionsProps) {
         <Link
           href={`/${page?.id}`}
           target="_blank"
-          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground"
+          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
         >
           <Eye size={20} />
           <span>Visualizar</span>
         </Link>
-        <button className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground">
+        <button className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold">
           <QrCode size={20} />
           <span>Reenviar QR Code</span>
         </button>

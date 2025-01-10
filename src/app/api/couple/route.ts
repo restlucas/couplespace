@@ -82,6 +82,9 @@ async function getCoupleDetails(request: Request) {
             message: true,
             createdAt: true,
           },
+          orderBy: {
+            createdAt: "desc",
+          },
         },
         songs: {
           select: {

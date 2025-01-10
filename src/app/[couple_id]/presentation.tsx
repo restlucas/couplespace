@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 import { Image as Picture } from "@phosphor-icons/react";
+import dateDifference from "@/utils/formatDate";
 
 interface PresentationProps {
   name: string;
@@ -17,8 +18,8 @@ export function Presentation({
   data: PresentationProps;
 }) {
   return (
-    <div className="mt-[12vh] mb-6 mx-8 flex flex-col items-center justify-center">
-      <div className="h-44 w-44 rounded-full overflow-hidden bg-pink-normal absolute inset-1/2 transform -translate-x-1/2 top-[10vh]">
+    <div className="my-10 mx-8 flex flex-col items-center justify-center">
+      <div className="h-44 w-44 rounded-full overflow-hidden relative shadow-lg">
         {presentation.picture ? (
           <Image
             src={presentation.picture}
@@ -34,20 +35,20 @@ export function Presentation({
         )}
       </div>
 
-      <span className="text-center text-2xl font-bold my-4">
+      <span className="text-center text-2xl font-bold my-4 drop-shadow-lg">
         {presentation.name}
       </span>
 
-      <div className="w-full lg:w-[980px] xl:w-[1024px] rounded-xl p-4 sm:p-6 bg-pink-neutral border-pink-normal border-2 shadow-md">
+      <div className="w-full lg:w-[980px] xl:w-[1024px] rounded-xl p-4 sm:p-6 bg-foreground shadow-md">
         <div className="text-center mb-4">
-          <h4 className="italic text-sm text-pink-normal">Contador</h4>
-          <span className="text-xl font-semibold mb-4 text-pink-normal">
-            1 ano, 2 meses e 3 dias
+          <h4 className="italic text-sm font-">Contador</h4>
+          <span className="text-xl font-bold mb-4">
+            {dateDifference(presentation.date)}
           </span>
         </div>
 
         <div>
-          <p className="italic font-semibold text-pink-normal">Sobre nós</p>
+          <p className="italic font-bold">Sobre nós</p>
           <span className="text-sm">{presentation.about}</span>
         </div>
       </div>

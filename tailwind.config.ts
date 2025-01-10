@@ -17,6 +17,8 @@ export default {
         "pink-neutral": "#404f77",
         facebook: "#4267B2",
         google: "#DB4437",
+        rose: "#FC5C7D",
+        "blue-clean": "#6A82FB",
       },
       keyframes: {
         fadeRight: {
