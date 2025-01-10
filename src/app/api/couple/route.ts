@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { updateImage, uploadImage } from "@/utils/firebaseStorage";
+import { uploadImage } from "@/utils/firebaseStorage";
 
 // GET Functions
 async function getCouple(request: Request) {
@@ -261,11 +261,12 @@ async function updatePage(request: Request) {
       },
     });
 
-    let pictureUrl = "";
+    console.log(picture);
+    const pictureUrl = "";
 
-    if (picture) {
-      pictureUrl = await updateImage(coupleId, "principal", picture);
-    }
+    // if (picture) {
+    //   pictureUrl = await updateImage(coupleId, "principal", picture);
+    // }
 
     await prisma.couple.update({
       where: { id: coupleId },
@@ -275,31 +276,32 @@ async function updatePage(request: Request) {
     });
 
     const pictures = formData.getAll("pictures");
+    console.log(pictures);
 
-    await Promise.all(
-      pictures.map(async (file) => {
-        if (file instanceof File) {
-          try {
-            const imageUrl = await updateImage(coupleId, "gallery", file);
+    // await Promise.all(
+    //   pictures.map(async (file) => {
+    //     if (file instanceof File) {
+    //       try {
+    //         const imageUrl = await updateImage(coupleId, "gallery", file);
 
-            await prisma.picture.create({
-              data: {
-                name: file.name,
-                url: imageUrl,
-                coupleId,
-              },
-            });
-          } catch (error) {
-            console.error(
-              "Error during picture upload or database operation:",
-              error
-            );
-          }
-        } else {
-          console.warn("Invalid file:", file);
-        }
-      })
-    );
+    //         await prisma.picture.create({
+    //           data: {
+    //             name: file.name,
+    //             url: imageUrl,
+    //             coupleId,
+    //           },
+    //         });
+    //       } catch (error) {
+    //         console.error(
+    //           "Error during picture upload or database operation:",
+    //           error
+    //         );
+    //       }
+    //     } else {
+    //       console.warn("Invalid file:", file);
+    //     }
+    //   })
+    // );
 
     const pageLink = `${baseUrl}/${coupleId}`;
 

@@ -28,16 +28,22 @@ export default async function CouplePage({
 }) {
   const coupleId = params.couple_id;
 
-  const { name, date, picture, about, ...content } = (await getCoupleDetails({
+  const details = await getCoupleDetails({
     key: "coupleId",
     value: coupleId,
-  })) as CouplePageProps;
+  });
+
+  if (!details) {
+    throw new Error("Couple details not found");
+  }
+
+  const { name, date, picture, about, ...content } = details as CouplePageProps;
 
   const presentation = {
-    name: name,
-    date: date,
-    picture: picture,
-    about: about,
+    name,
+    date,
+    picture,
+    about,
   };
 
   return (
