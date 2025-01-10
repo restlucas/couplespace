@@ -90,7 +90,7 @@ export default function EditPage() {
     };
 
     fetchPage(userId);
-  }, []);
+  }, [userId]);
 
   return (
     <div className="space-y-8">

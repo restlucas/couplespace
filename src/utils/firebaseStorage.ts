@@ -35,11 +35,3 @@ export const uploadImage = async (
     );
   });
 };
-
-export const updateImage = async (
-  coupleId: string,
-  type: string,
-  file: File
-): Promise<string> => {
-  return "s";
-};

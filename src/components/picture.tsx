@@ -44,7 +44,7 @@ export function Picture({ picture, setForm }: PictureProps) {
     } else {
       setImagePreview(null);
     }
-  }, []);
+  }, [picture]);
 
   return (
     <>

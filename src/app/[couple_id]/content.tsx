@@ -17,7 +17,7 @@ export function Content({ data }: { data: Page }) {
 
   useEffect(() => {
     handleContent(data);
-  }, []);
+  }, [handleContent, data]);
 
   return (
     <div className="space-y-8 flex flex-col items-center justify-center px-8">
