@@ -18,16 +18,29 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
   font-family: var(----font-bree-serif-sans), Arial, Helvetica, sans-serif;
+
+  /* background: var(--background);*/
+  background: linear-gradient(
+    -45deg,
+    #f80759,
+    #e560dc,
+    #ffb374,
+    #ef5f5f,
+    #d840b6
+  );
+  background-size: 400% 400%;
+  animation: bg 12s ease infinite;
 }
 
-.text-gradient {
-  background: linear-gradient(
-    to right,
-    #7e22ce,
-    #3b82f6
-  ); /* violet-500 to blue-500 */
-  -webkit-background-clip: text;
-  color: transparent;
+@keyframes bg {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

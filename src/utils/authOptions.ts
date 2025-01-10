@@ -80,20 +80,20 @@ export const authOptions: NextAuthOptions = {
             image: user.image ?? "", // Garante que image seja string ou null
           },
         });
-      }
 
-      // Caso tenha um 'account', cria a conta associada ao usuário
-      if (account) {
-        // Assegura que o 'account' tem todas as propriedades necessárias
-        await prisma.account.create({
-          data: {
-            provider: account.provider,
-            type: account.type,
-            providerAccountId: account.providerAccountId,
-            accessToken: account.access_token ?? "no-token", // Usa uma string vazia se accessToken for null ou undefined
-            userId: existingUser.id,
-          },
-        });
+        // Caso tenha um 'account', cria a conta associada ao usuário
+        if (account) {
+          // Assegura que o 'account' tem todas as propriedades necessárias
+          await prisma.account.create({
+            data: {
+              provider: account.provider,
+              type: account.type,
+              providerAccountId: account.providerAccountId,
+              accessToken: account.access_token ?? "no-token", // Usa uma string vazia se accessToken for null ou undefined
+              userId: existingUser.id,
+            },
+          });
+        }
       }
 
       return true; // Caso o login seja bem-sucedido, retornamos 'true'
