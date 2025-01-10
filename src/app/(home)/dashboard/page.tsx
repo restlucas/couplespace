@@ -6,7 +6,7 @@ import { getCouple } from "@/services/couple";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
-  const couplePage = await getCouple(session.user.id);
+  const couplePage = await getCouple(session?.user.id);
 
   if (!session) {
     redirect("/login");
