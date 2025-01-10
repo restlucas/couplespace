@@ -3,7 +3,7 @@
 import { CouplePageProps } from "@/app/[couple_id]/page";
 import { PicturesGrid } from "@/components/pictures-grid";
 import { getCoupleDetails, updatePage } from "@/services/couple";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { transformToFile } from "@/utils/transformToFile";
 import { Picture } from "@/components/picture";
 import { Form } from "../create/page";
@@ -93,134 +93,136 @@ export default function EditPage() {
   }, [userId]);
 
   return (
-    <div className="space-y-8">
-      <h3 className="">Editando informações da página</h3>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="space-y-8">
+        <h3 className="">Editando informações da página</h3>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-pulse">
-          <div className="flex flex-col gap-2">
-            <div className="h-10 w-32 bg-foreground rounded-md" />
-            <div className="h-10 px-4 rounded-md bg-foreground" />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="h-10 w-32 bg-foreground rounded-md" />
-            <div className="h-10 px-4 rounded-md bg-foreground" />
-          </div>
-
-          <div className="flex flex-col gap-2 col-span-full">
-            <div className="h-10 w-32 rounded-md bg-foreground" />
-            <div className="px-4 py-2 h-32 rounded-md bg-foreground" />
-          </div>
-
-          <div className="col-span-full">
-            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="flex items-center justify-center gap-2 rounded-md border-dashed border-2 border-foreground p-6">
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <div className="h-10 w-28 rounded-md bg-foreground" />
-                  <div className="w-20 h-20 sm:w-36 sm:h-36 rounded-full bg-foreground flex items-center justify-center cursor-pointer relative" />
-                </div>
-              </div>
-
-              <div className="rounded-md border-dashed border-2 border-foreground p-4">
-                <div className="h-10 w-20 mb-4 rounded-md bg-foreground" />
-                <div className="grid grid-cols-3 gap-2">
-                  {Array.from({ length: 6 }).map((_, index) => {
-                    return (
-                      <div
-                        key={index}
-                        className="flex items-center justify-center rounded-md bg-foreground duration-100"
-                        style={{ aspectRatio: "1" }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <>
-          <form
-            id="pageForm"
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-          >
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-pulse">
             <div className="flex flex-col gap-2">
-              <label htmlFor="name">Nome do casal</label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                className="h-10 px-4 rounded-md bg-foreground"
-                value={form.name || ""}
-                onChange={handleChange}
-              />
+              <div className="h-10 w-32 bg-foreground rounded-md" />
+              <div className="h-10 px-4 rounded-md bg-foreground" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="date">Início de relacionamento</label>
-              <input
-                id="date"
-                name="date"
-                type="date"
-                className="h-10 px-4 rounded-md bg-foreground"
-                value={form.date || ""}
-                onChange={handleChange}
-              />
+              <div className="h-10 w-32 bg-foreground rounded-md" />
+              <div className="h-10 px-4 rounded-md bg-foreground" />
             </div>
 
             <div className="flex flex-col gap-2 col-span-full">
-              <label htmlFor="about">Sobre vocês</label>
-              <textarea
-                id="about"
-                name="about"
-                rows={5}
-                className="px-4 py-2 rounded-md bg-foreground resize-none"
-                value={form.about || ""}
-                onChange={handleChange}
-              />
+              <div className="h-10 w-32 rounded-md bg-foreground" />
+              <div className="px-4 py-2 h-32 rounded-md bg-foreground" />
             </div>
 
             <div className="col-span-full">
               <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="flex items-center justify-center gap-2 rounded-md border-dashed border-2 border-foreground p-6">
                   <div className="flex flex-col items-center justify-center gap-4">
-                    <span className="text-sm">Foto principal</span>
-                    <Picture picture={form.picture} setForm={setForm} />
+                    <div className="h-10 w-28 rounded-md bg-foreground" />
+                    <div className="w-20 h-20 sm:w-36 sm:h-36 rounded-full bg-foreground flex items-center justify-center cursor-pointer relative" />
                   </div>
                 </div>
 
                 <div className="rounded-md border-dashed border-2 border-foreground p-4">
-                  <span className="text-xs mb-4">Fotos</span>
-                  <PicturesGrid pictures={form.pictures} setForm={setForm} />
+                  <div className="h-10 w-20 mb-4 rounded-md bg-foreground" />
+                  <div className="grid grid-cols-3 gap-2">
+                    {Array.from({ length: 6 }).map((_, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center justify-center rounded-md bg-foreground duration-100"
+                          style={{ aspectRatio: "1" }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
-          </form>
-
-          <div className="flex items-center justify-end gap-4">
-            <Link
-              href="/dashboard"
-              className="flex-1 sm:flex-none h-10 w-32 font-bold rounded-md duration-100 hover:bg-foreground flex items-center justify-center"
-            >
-              Voltar
-            </Link>
-            <button
-              form="pageForm"
-              className="flex-1 sm:flex-none h-10 w-32 rounded-md bg-gradient-to-r from-rose to-blue-clean font-bold"
-            >
-              {isSubmitting ? (
-                <div className="flex w-full items-center justify-center">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                </div>
-              ) : (
-                <span>Salvar</span>
-              )}
-            </button>
           </div>
-        </>
-      )}
-    </div>
+        ) : (
+          <>
+            <form
+              id="pageForm"
+              onSubmit={handleSubmit}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+            >
+              <div className="flex flex-col gap-2">
+                <label htmlFor="name">Nome do casal</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  className="h-10 px-4 rounded-md bg-foreground"
+                  value={form.name || ""}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="date">Início de relacionamento</label>
+                <input
+                  id="date"
+                  name="date"
+                  type="date"
+                  className="h-10 px-4 rounded-md bg-foreground"
+                  value={form.date || ""}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2 col-span-full">
+                <label htmlFor="about">Sobre vocês</label>
+                <textarea
+                  id="about"
+                  name="about"
+                  rows={5}
+                  className="px-4 py-2 rounded-md bg-foreground resize-none"
+                  value={form.about || ""}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="col-span-full">
+                <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="flex items-center justify-center gap-2 rounded-md border-dashed border-2 border-foreground p-6">
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <span className="text-sm">Foto principal</span>
+                      <Picture picture={form.picture} setForm={setForm} />
+                    </div>
+                  </div>
+
+                  <div className="rounded-md border-dashed border-2 border-foreground p-4">
+                    <span className="text-xs mb-4">Fotos</span>
+                    <PicturesGrid pictures={form.pictures} setForm={setForm} />
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <div className="flex items-center justify-end gap-4">
+              <Link
+                href="/dashboard"
+                className="flex-1 sm:flex-none h-10 w-32 font-bold rounded-md duration-100 hover:bg-foreground flex items-center justify-center"
+              >
+                Voltar
+              </Link>
+              <button
+                form="pageForm"
+                className="flex-1 sm:flex-none h-10 w-32 rounded-md bg-gradient-to-r from-rose to-blue-clean font-bold"
+              >
+                {isSubmitting ? (
+                  <div className="flex w-full items-center justify-center">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  </div>
+                ) : (
+                  <span>Salvar</span>
+                )}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </Suspense>
   );
 }
