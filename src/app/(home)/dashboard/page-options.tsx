@@ -1,7 +1,7 @@
 "use client";
 
 import { sendQrCode } from "@/services/couple";
-import { Eye, PencilSimple, Plus, QrCode } from "@phosphor-icons/react";
+import { Eye, Plus, QrCode } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -63,13 +63,13 @@ export function PageOptions({ user, page }: PageOptionsProps) {
           <Plus size={20} />
           <span>Nova publicação</span>
         </Link>
-        <Link
+        {/* <Link
           href={`/dashboard/edit?userId=${user.id}`}
           className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
         >
           <PencilSimple size={20} />
           <span>Editar página</span>
-        </Link>
+        </Link> */}
         <Link
           href={`/${page?.id}`}
           target="_blank"
