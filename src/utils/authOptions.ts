@@ -1,9 +1,12 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
-
+import { PrismaClient, User } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
+import { JWT } from "next-auth/jwt";
+import { Account } from "next-auth";
+import { Session } from "next-auth";
 
+// Inicializando o PrismaClient
 const prisma = new PrismaClient();
 
 export const authOptions = {
@@ -26,14 +29,28 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async redirect({ url, baseUrl }) {
+    async redirect({
+      url,
+      baseUrl,
+    }: {
+      url: string;
+      baseUrl: string;
+    }): Promise<string> {
       if (url === baseUrl || url.startsWith(baseUrl)) {
         return `${baseUrl}/dashboard`;
       }
       return url;
     },
 
-    async jwt({ token, account, user }) {
+    async jwt({
+      token,
+      account,
+      user,
+    }: {
+      token: JWT;
+      account: Account | null;
+      user: User; // O tipo exato do `user` pode ser `User` do NextAuth ou Prisma, dependendo de como você implementou.
+    }): Promise<JWT> {
       if (account && user) {
         token.id = user.id;
         token.email = user.email;
@@ -42,7 +59,13 @@ export const authOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({
+      session,
+      token,
+    }: {
+      session: Session;
+      token: JWT;
+    }): Promise<Session> {
       if (token) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
@@ -51,7 +74,13 @@ export const authOptions = {
       return session;
     },
 
-    async signIn({ user, account }) {
+    async signIn({
+      user,
+      account,
+    }: {
+      user: User; // O tipo exato de `user` pode ser o tipo `User` do NextAuth ou o tipo customizado do Prisma
+      account: Account | null;
+    }): Promise<boolean> {
       let existingUser = await prisma.user.findFirst({
         where: {
           email: user?.email ?? "",
@@ -69,10 +98,10 @@ export const authOptions = {
 
         await prisma.account.create({
           data: {
-            provider: account.provider,
-            type: account.type,
-            providerAccountId: account.providerAccountId,
-            accessToken: account.access_token,
+            provider: account?.provider ?? "",
+            type: account?.type ?? "",
+            providerAccountId: account?.providerAccountId ?? "",
+            accessToken: account?.access_token ?? "",
             userId: existingUser.id,
           },
         });
