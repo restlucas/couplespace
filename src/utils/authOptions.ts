@@ -1,19 +1,17 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
-import { JWT } from "next-auth/jwt";
-import { Account } from "next-auth";
-import { Session } from "next-auth";
+import { NextAuthOptions, User, Account } from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 
-// Inicializando o PrismaClient
 const prisma = new PrismaClient();
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
   },
   pages: {
     signIn: "/login",
@@ -29,47 +27,27 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async redirect({
-      url,
-      baseUrl,
-    }: {
-      url: string;
-      baseUrl: string;
-    }): Promise<string> {
+    async redirect({ url, baseUrl }) {
       if (url === baseUrl || url.startsWith(baseUrl)) {
         return `${baseUrl}/dashboard`;
       }
       return url;
     },
 
-    async jwt({
-      token,
-      account,
-      user,
-    }: {
-      token: JWT;
-      account: Account | null;
-      user: User; // O tipo exato do `user` pode ser `User` do NextAuth ou Prisma, dependendo de como você implementou.
-    }): Promise<JWT> {
+    async jwt({ token, account, user }) {
       if (account && user) {
         token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
+        token.email = user.email ?? null; // Garantir que email seja null ou string
+        token.name = user.name ?? null; // Garantir que name seja null ou string
       }
       return token;
     },
 
-    async session({
-      session,
-      token,
-    }: {
-      session: Session;
-      token: JWT;
-    }): Promise<Session> {
+    async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
       }
       return session;
     },
@@ -78,36 +56,47 @@ export const authOptions = {
       user,
       account,
     }: {
-      user: User; // O tipo exato de `user` pode ser o tipo `User` do NextAuth ou o tipo customizado do Prisma
+      user: User | AdapterUser;
       account: Account | null;
-    }): Promise<boolean> {
+    }) {
+      // Verifica se os parâmetros 'user' e 'account' são válidos
+      if (!user || !account) {
+        return false; // Caso contrário, retorne falso
+      }
+
+      // Verifica se o usuário já existe na base de dados
       let existingUser = await prisma.user.findFirst({
         where: {
-          email: user?.email ?? "",
+          email: user.email ?? "", // Garante que email seja uma string válida
         },
       });
 
+      // Se o usuário não existir, cria um novo
       if (!existingUser) {
         existingUser = await prisma.user.create({
           data: {
-            email: user?.email ?? "",
-            name: user?.name ?? "",
-            image: user?.image ?? "",
+            email: user.email ?? "", // Garante que email seja string ou null
+            name: user.name ?? "", // Garante que name seja string ou null
+            image: user.image ?? "", // Garante que image seja string ou null
           },
         });
+      }
 
+      // Caso tenha um 'account', cria a conta associada ao usuário
+      if (account) {
+        // Assegura que o 'account' tem todas as propriedades necessárias
         await prisma.account.create({
           data: {
-            provider: account?.provider ?? "",
-            type: account?.type ?? "",
-            providerAccountId: account?.providerAccountId ?? "",
-            accessToken: account?.access_token ?? "",
+            provider: account.provider,
+            type: account.type,
+            providerAccountId: account.providerAccountId,
+            accessToken: account.access_token ?? "no-token", // Usa uma string vazia se accessToken for null ou undefined
             userId: existingUser.id,
           },
         });
       }
 
-      return true;
+      return true; // Caso o login seja bem-sucedido, retornamos 'true'
     },
   },
 };
