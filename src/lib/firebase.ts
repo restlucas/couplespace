@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import {
   getStorage,
   ref,
+  listAll,
+  deleteObject,
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
@@ -19,4 +21,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-export { storage, ref, uploadBytesResumable, getDownloadURL };
+export {
+  storage,
+  ref,
+  listAll,
+  deleteObject,
+  uploadBytesResumable,
+  getDownloadURL,
+};

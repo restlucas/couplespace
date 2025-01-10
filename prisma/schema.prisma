@@ -81,7 +81,8 @@ model Song {
 
 model Picture {
   id            String @id @default(cuid())
-  url           String
+  url           String @db.Text
+  name          String @db.Text
   coupleId      String
   couple        Couple    @relation(fields: [coupleId], references: [id])
 }

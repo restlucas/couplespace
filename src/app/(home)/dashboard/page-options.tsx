@@ -1,10 +1,8 @@
 "use client";
 
-import { Eye, PencilSimple, QrCode, Trash } from "@phosphor-icons/react";
-import { NewPage } from "./new-page";
+import { Eye, PencilSimple, Plus, QrCode } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useState } from "react";
-import { EditPage } from "./edit-page";
+import { useRouter } from "next/navigation";
 
 interface PageOptionsProps {
   user: {
@@ -27,18 +25,18 @@ interface PageOptionsProps {
 }
 
 export function PageOptions({ user, page }: PageOptionsProps) {
-  const [isEditingPage, setIsEditingPage] = useState(false);
+  const router = useRouter();
 
   if (!page) {
-    return <NewPage userId={user.id} />;
-  }
-
-  if (isEditingPage) {
-    return <EditPage />;
+    router.push(`/dashboard/create?userId=${user.id}`);
   }
 
   return (
     <div className="space-y-8">
+      <h3 className="mb-8 text-xl">
+        Olá, <span className="font-bold">{user.name}</span>
+      </h3>
+
       <h2 className="text-lg font-semibold mb-4">Minha página</h2>
 
       <div>
@@ -47,24 +45,27 @@ export function PageOptions({ user, page }: PageOptionsProps) {
           type="text"
           className="flex-1 h-10 w-full px-3 rounded-md bg-foreground"
           readOnly
-          value={page.link || ""}
+          value={page?.link || ""}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 justify-center gap-2">
-        <button
-          onClick={() => setIsEditingPage(true)}
+        <Link
+          href={`/dashboard/new-publication?userId=${user.id}`}
+          className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground"
+        >
+          <Plus size={20} />
+          <span>Nova publicação</span>
+        </Link>
+        <Link
+          href={`/dashboard/edit?userId=${user.id}`}
           className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground"
         >
           <PencilSimple size={20} />
-          <span>Editar</span>
-        </button>
-        <button className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground">
-          <Trash size={20} />
-          <span>Excluir</span>
-        </button>
+          <span>Editar página</span>
+        </Link>
         <Link
-          href={`/${page.id}`}
+          href={`/${page?.id}`}
           target="_blank"
           className="flex items-center justify-center gap-4 h-10 px-6 rounded-md bg-foreground"
         >

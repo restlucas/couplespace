@@ -12,19 +12,7 @@ export default async function Dashboard() {
     redirect("/login");
   }
 
-  return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="w-[1024px] animate-fade-right bg-gradient-to-r from-violet-500 to-blue-500 p-1 rounded-md">
-        <div className="h-auto p-8 rounded-md bg-foreground-light shadow-md">
-          <h3 className="mb-8 text-xl">
-            Bem vindo <span className="font-bold">{session.user.name}</span>
-          </h3>
-
-          <PageOptions user={session.user} page={couplePage.data} />
-        </div>
-      </div>
-    </div>
-  );
+  return <PageOptions user={session.user} page={couplePage.data} />;
 
   // const router = useRouter();
   // const { data: session, status } = useSession();

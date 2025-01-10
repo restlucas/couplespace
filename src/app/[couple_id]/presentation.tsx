@@ -20,15 +20,6 @@ export function Presentation({
     <div className="mt-[12vh] mb-6 mx-8 flex flex-col items-center justify-center">
       <div className="h-44 w-44 rounded-full overflow-hidden bg-pink-normal absolute inset-1/2 transform -translate-x-1/2 top-[10vh]">
         {presentation.picture ? (
-          // <Image
-          //   alt="Photo"
-          //   src={presentation.picture}
-          //   className="rounded-full"
-          //   layout="fixed"
-          //   width={176}
-          //   height={176}
-          // />
-
           <Image
             src={presentation.picture}
             alt="Picture"

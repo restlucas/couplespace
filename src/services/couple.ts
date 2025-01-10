@@ -61,9 +61,58 @@ export const getCoupleDetails = async (identifier: {
   }
 };
 
-export const generatePage = async (formData: FormData) => {
+export const createPage = async (formData: FormData) => {
   try {
-    const response = await fetch(`${baseUrl}/api/couple`, {
+    const response = await fetch(`${baseUrl}/api/couple?action=createPage`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on generate new page:", error);
+      return {
+        type: "error",
+        message: "Error on generate new page",
+      };
+    } else {
+      console.error("Unknown error", error);
+    }
+  }
+};
+
+export const createPublication = async (data: {
+  message: string;
+  userId: string;
+}) => {
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/couple?action=createPublication`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
+
+    return await response.json();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on create new publication:", error);
+      return {
+        type: "error",
+        message: "Error on create new publication",
+      };
+    } else {
+      console.error("Unknown error", error);
+    }
+  }
+};
+
+export const updatePage = async (formData: FormData) => {
+  try {
+    const response = await fetch(`${baseUrl}/api/couple?action=updatePage`, {
       method: "POST",
       body: formData,
     });
