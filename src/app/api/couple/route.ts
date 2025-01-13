@@ -14,36 +14,30 @@ async function getPage(request: Request) {
     );
   }
 
-  try {
-    const page = await prisma.couple.findFirst({
-      where: {
-        userId,
-      },
-      select: {
-        id: true,
-        link: true,
-      },
-    });
+  const page = await prisma.couple.findFirst({
+    where: {
+      userId,
+    },
+    select: {
+      id: true,
+      link: true,
+    },
+  });
 
-    if (!page) {
-      return NextResponse.json(
-        { type: "error", message: "Page not found" },
-        { status: 404 }
-      );
-    }
+  let dataValue: { id: string | null; link: string | null } = {
+    id: "",
+    link: "",
+  };
 
-    return NextResponse.json({
-      type: "success",
-      message: "Page retrieved successfully",
-      data: page,
-    });
-  } catch (error) {
-    console.error("Error fetching page:", error);
-    return NextResponse.json(
-      { type: "error", message: "Error fetching page" },
-      { status: 500 }
-    );
+  if (page) {
+    dataValue = page;
   }
+
+  return NextResponse.json({
+    type: "success",
+    message: "Page retrieved successfully",
+    data: dataValue,
+  });
 }
 
 async function getPageDetails(request: Request) {

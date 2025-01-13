@@ -48,7 +48,7 @@ export function PageOptions() {
         Olá, <span className="font-bold">{user.name}</span>
       </h3>
 
-      {user.page.id ? (
+      {user.page.id !== "" ? (
         <>
           <h2 className="text-lg font-semibold">Minha página</h2>
 

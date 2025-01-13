@@ -42,15 +42,17 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
   const getUser = async (user: User) => {
     const response = await getPage(user.id);
 
-    const { id, link } = response.data;
+    if (response.type !== "error") {
+      const { id, link } = response.data;
 
-    setUser({
-      ...user,
-      page: {
-        id,
-        link,
-      },
-    });
+      setUser({
+        ...user,
+        page: {
+          id,
+          link,
+        },
+      });
+    }
   };
 
   const makeLogout = async () => {
