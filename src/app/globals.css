@@ -44,3 +44,9 @@ body {
     background-position: 0% 50%;
   }
 }
+
+iframe {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto;
+}
