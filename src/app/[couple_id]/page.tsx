@@ -1,6 +1,5 @@
-import { getCoupleDetails } from "@/services/couple";
+import { getPageDetails } from "@/services/couple";
 import { Presentation } from "./presentation";
-import { BaseGallery } from "@/contexts/CoupleContext";
 import { Content } from "./content";
 import Link from "next/link";
 
@@ -20,16 +19,31 @@ export type CouplePageProps = {
         id: string;
         message: string;
         createdAt: string;
+        user: {
+          name: string;
+        };
       }[]
     | [];
-  songs: BaseGallery[] | [];
-  pictures: BaseGallery[] | [];
+  pictures: { url: string; name: string }[] | [];
 };
+
+export async function generateMetadata({ params }: PageProps) {
+  const couple_id = (await params).couple_id;
+  const data = await getPageDetails({
+    key: "coupleId",
+    value: couple_id,
+  });
+
+  return {
+    title: `Couplesace | Página de ${data.name}`,
+    description: `Página de ${data.name}`,
+  };
+}
 
 export default async function CouplePage({ params }: PageProps) {
   const couple_id = (await params).couple_id;
 
-  const details = await getCoupleDetails({
+  const details = await getPageDetails({
     key: "coupleId",
     value: couple_id,
   });

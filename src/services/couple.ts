@@ -1,9 +1,9 @@
 const baseUrl = typeof window === "undefined" ? process.env.NEXTAUTH_URL : "";
 
-export const getCouple = async (userId: string) => {
+export const getPage = async (userId: string) => {
   try {
     const response = await fetch(
-      `${baseUrl}/api/couple?action=getCouple&userId=${encodeURIComponent(
+      `${baseUrl}/api/couple?action=getPage&userId=${encodeURIComponent(
         userId
       )}`,
       {
@@ -28,13 +28,13 @@ export const getCouple = async (userId: string) => {
   }
 };
 
-export const getCoupleDetails = async (identifier: {
+export const getPageDetails = async (identifier: {
   key: string;
   value: string;
 }) => {
   try {
     const response = await fetch(
-      `${baseUrl}/api/couple?action=getCoupleDetails&${
+      `${baseUrl}/api/couple?action=getPageDetails&${
         identifier.key
       }=${encodeURIComponent(identifier.value)}`,
       {
@@ -93,6 +93,9 @@ export const createPublication = async (data: {
       {
         method: "POST",
         body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
     );
 

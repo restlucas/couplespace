@@ -20,12 +20,21 @@ export function Feed() {
                 key={publication.id}
                 className="rounded-xl p-4 sm:p-6 bg-foreground shadow-lg"
               >
-                <div className="flex items-center justify-start mb-2">
+                <div className="w-full flex items-center justify-between mb-2">
+                  <div className="text-sm italic">
+                    <span>por </span>
+                    <span className="font-bold">
+                      {publication.user.name.split(" ")[0]}
+                    </span>
+                  </div>
                   <span className="text-xs italic font-semibold">
                     {timeSinceRecord(publication.createdAt)}
                   </span>
                 </div>
-                <div className="">{publication.message}</div>
+                <div
+                  className="w-full"
+                  dangerouslySetInnerHTML={{ __html: publication.message }}
+                />
               </div>
             );
           })

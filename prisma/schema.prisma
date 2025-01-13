@@ -46,6 +46,7 @@ model User {
 
   account       Account?
   couple        Couple?
+  publications  Publication[]
 }
 
 model Couple {
@@ -61,7 +62,6 @@ model Couple {
   updatedAt     DateTime  @updatedAt
 
   publications  Publication[]
-  songs         Song[]
   pictures      Picture[]
   
   user          User    @relation(fields: [userId], references: [id])
@@ -70,17 +70,12 @@ model Couple {
 model Publication {
   id            String @id @default(cuid())
   coupleId      String
-  message       String
+  message       String @db.Text
+  userId        String
   createdAt     DateTime  @default(now())
 
   couple        Couple    @relation(fields: [coupleId], references: [id])
-}
-
-model Song {
-  id      String @id @default(cuid())
-  url     String
-  coupleId      String
-  couple        Couple    @relation(fields: [coupleId], references: [id])
+  user        User    @relation(fields: [userId], references: [id])
 }
 
 model Picture {

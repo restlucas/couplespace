@@ -1,13 +1,13 @@
 "use client";
 
-import { PublicationProvider } from "@/contexts/PublicationContext";
+import { UserContextProvider } from "@/contexts/UserContext";
 import { SessionProvider } from "next-auth/react";
 import React from "react";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <PublicationProvider>{children}</PublicationProvider>
+      <UserContextProvider>{children}</UserContextProvider>
     </SessionProvider>
   );
 }

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { PicturesGrid } from "@/components/pictures-grid";
 import { Picture } from "@/components/picture";
 import Link from "next/link";
 import { createPage } from "@/services/couple";
+import { UserContext } from "@/contexts/UserContext";
+import { useSession } from "next-auth/react";
 
 export interface Form {
   name: string;
@@ -17,8 +19,8 @@ export interface Form {
 }
 
 export default function NewPage() {
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("userId") as string;
+  const { update } = useSession();
+  const { user } = useContext(UserContext);
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -46,7 +48,7 @@ export default function NewPage() {
     setIsLoading(true);
     const formData = new FormData();
 
-    formData.append("userId", userId);
+    formData.append("userId", user.id);
     formData.append("name", form.name);
     formData.append("date", form.date);
     formData.append("about", form.about);
@@ -65,6 +67,7 @@ export default function NewPage() {
 
     if (response.type === "success") {
       alert("Sucesso ao gerar página, redirecionando!");
+      await update();
       await new Promise((resolve) => setTimeout(resolve, 2000));
       router.push("/dashboard");
     }

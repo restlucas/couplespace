@@ -2,11 +2,6 @@
 
 import React, { createContext, ReactNode, useState } from "react";
 
-export interface BaseGallery {
-  id: string;
-  url: string;
-}
-
 export interface Page {
   id: string;
   link: string;
@@ -15,10 +10,12 @@ export interface Page {
         id: string;
         message: string;
         createdAt: string;
+        user: {
+          name: string;
+        };
       }[]
     | [];
-  songs: BaseGallery[] | [];
-  pictures: BaseGallery[] | [];
+  pictures: { url: string; name: string }[] | [];
 }
 
 interface CoupleContextType {
@@ -39,7 +36,6 @@ export function CoupleContextProvider({
     id: "",
     link: "",
     publications: [],
-    songs: [],
     pictures: [],
   });
 

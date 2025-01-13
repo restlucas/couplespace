@@ -47,18 +47,10 @@ CREATE TABLE "Publication" (
     "id" TEXT NOT NULL,
     "coupleId" TEXT NOT NULL,
     "message" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Publication_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Song" (
-    "id" TEXT NOT NULL,
-    "url" TEXT NOT NULL,
-    "coupleId" TEXT NOT NULL,
-
-    CONSTRAINT "Song_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -93,7 +85,7 @@ ALTER TABLE "Couple" ADD CONSTRAINT "Couple_userId_fkey" FOREIGN KEY ("userId") 
 ALTER TABLE "Publication" ADD CONSTRAINT "Publication_coupleId_fkey" FOREIGN KEY ("coupleId") REFERENCES "Couple"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Song" ADD CONSTRAINT "Song_coupleId_fkey" FOREIGN KEY ("coupleId") REFERENCES "Couple"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Publication" ADD CONSTRAINT "Publication_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Picture" ADD CONSTRAINT "Picture_coupleId_fkey" FOREIGN KEY ("coupleId") REFERENCES "Couple"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,14 +1,15 @@
 "use client";
 
+import { TextEditor } from "@/components/TextEditor";
+import { UserContext } from "@/contexts/UserContext";
 import { createPublication } from "@/services/couple";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useContext, useState } from "react";
 
 export default function NewPublicationPage() {
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("userId") as string;
   const router = useRouter();
+  const { user } = useContext(UserContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string>("");
@@ -16,7 +17,7 @@ export default function NewPublicationPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const response = await createPublication({ message, userId });
+    const response = await createPublication({ message, userId: user.id });
 
     if (response.type === "success") {
       alert("Publicação criada com sucesso!");
@@ -34,14 +35,7 @@ export default function NewPublicationPage() {
         onSubmit={handleSubmit}
         className="space-y-4"
       >
-        <label className="text-sm">Mensagem</label>
-        <textarea
-          id="message"
-          name="message"
-          onChange={(e) => setMessage(e.target.value)}
-          className="resize-none p-2 rounded-md bg-foreground w-full"
-          rows={10}
-        />
+        <TextEditor setContent={setMessage} />
       </form>
 
       <div className="flex items-center justify-end gap-4">
