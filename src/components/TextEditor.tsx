@@ -7,7 +7,6 @@ import Italic from "@tiptap/extension-italic";
 import Youtube from "@tiptap/extension-youtube";
 import { Dispatch, SetStateAction, useState } from "react";
 
-import Spotify from "../extensions/Spotify";
 import { TextB, TextItalic, YoutubeLogo } from "@phosphor-icons/react";
 
 export const TextEditor = ({
@@ -27,7 +26,6 @@ export const TextEditor = ({
       Youtube.configure({
         controls: true,
       }),
-      Spotify,
     ],
     content: "<p>Sua mensagem aqui...</p>",
     onUpdate: ({ editor }) => {
