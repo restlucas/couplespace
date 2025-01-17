@@ -5,11 +5,22 @@ import { getPageDetails, updatePage } from "@/services/couple";
 import { Suspense, useContext, useEffect, useState } from "react";
 import { transformToFile } from "@/utils/transformToFile";
 import { Picture } from "@/components/picture";
-import { Form, formSchema } from "../create/page";
+import { Form } from "../create/page";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserContext } from "@/contexts/UserContext";
 import { PageProps } from "@/app/[page_id]/page";
+import { z } from "zod";
+
+const formSchema = z.object({
+  name: z.string().min(1, "O nome é obrigatório"),
+  date: z.string().min(1, "A data é obrigatória"),
+  about: z
+    .string()
+    .min(10, "O campo 'sobre vocês' deve ter pelo menos 10 caracteres"),
+  picture: z.instanceof(File, { message: "A imagem principal é obrigatória" }),
+  pictures: z.array(z.instanceof(File)),
+});
 
 export default function EditPage() {
   const router = useRouter();

@@ -19,7 +19,7 @@ export interface Form {
   pictures: File[] | [];
 }
 
-export const formSchema = z.object({
+const formSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório"),
   date: z.string().min(1, "A data é obrigatória"),
   about: z
