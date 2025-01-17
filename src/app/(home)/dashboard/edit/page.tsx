@@ -1,15 +1,15 @@
 "use client";
 
-import { CouplePageProps } from "@/app/[couple_id]/page";
 import { PicturesGrid } from "@/components/pictures-grid";
 import { getPageDetails, updatePage } from "@/services/couple";
 import { Suspense, useContext, useEffect, useState } from "react";
 import { transformToFile } from "@/utils/transformToFile";
 import { Picture } from "@/components/picture";
-import { Form } from "../create/page";
+import { Form, formSchema } from "../create/page";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserContext } from "@/contexts/UserContext";
+import { PageProps } from "@/app/[page_id]/page";
 
 export default function EditPage() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function EditPage() {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<Form>({
     name: "",
     date: "",
@@ -39,6 +40,20 @@ export default function EditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const validation = formSchema.safeParse(form);
+
+    if (!validation.success) {
+      setErrors(
+        validation.error.errors.reduce((acc, err) => {
+          acc[err.path[0]] = err.message;
+          return acc;
+        }, {} as Record<string, string>)
+      );
+      setIsLoading(false);
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append("userId", user.id);
@@ -70,7 +85,7 @@ export default function EditPage() {
       const response = (await getPageDetails({
         key: "userId",
         value: userId,
-      })) as CouplePageProps;
+      })) as PageProps;
 
       const pictureConverted = (await transformToFile(
         response.picture
@@ -97,7 +112,7 @@ export default function EditPage() {
   return (
     <Suspense>
       <div className="space-y-8">
-        <h3 className="">Editando informações da página</h3>
+        <h3 className="font-bold">Editando informações da página</h3>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-pulse">
@@ -159,6 +174,9 @@ export default function EditPage() {
                   value={form.name || ""}
                   onChange={handleChange}
                 />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">{errors.name}</span>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
@@ -171,6 +189,9 @@ export default function EditPage() {
                   value={form.date || ""}
                   onChange={handleChange}
                 />
+                {errors.date && (
+                  <span className="text-red-500 text-sm">{errors.date}</span>
+                )}
               </div>
 
               <div className="flex flex-col gap-2 col-span-full">
@@ -183,6 +204,9 @@ export default function EditPage() {
                   value={form.about || ""}
                   onChange={handleChange}
                 />
+                {errors.about && (
+                  <span className="text-red-500 text-sm">{errors.about}</span>
+                )}
               </div>
 
               <div className="col-span-full">
@@ -191,6 +215,11 @@ export default function EditPage() {
                     <div className="flex flex-col items-center justify-center gap-4">
                       <span className="text-sm">Foto principal</span>
                       <Picture picture={form.picture} setForm={setForm} />
+                      {errors.picture && (
+                        <span className="text-red-500 text-sm">
+                          {errors.picture}
+                        </span>
+                      )}
                     </div>
                   </div>
 

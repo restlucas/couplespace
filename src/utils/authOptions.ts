@@ -60,44 +60,47 @@ export const authOptions: NextAuthOptions = {
       user: User | AdapterUser;
       account: Account | null;
     }) {
-      // Verifica se os parâmetros 'user' e 'account' são válidos
       if (!user || !account) {
-        return false; // Caso contrário, retorne falso
+        return false;
       }
 
-      // Verifica se o usuário já existe na base de dados
-      let existingUser = await prisma.user.findFirst({
+      const existingUser = await prisma.user.upsert({
         where: {
-          email: user.email ?? "", // Garante que email seja uma string válida
+          email: user.email ?? "",
+        },
+        update: {
+          name: user.name ?? "",
+          image: user.image ?? "",
+        },
+        create: {
+          email: user.email ?? "",
+          name: user.name ?? "",
+          image: user.image ?? "",
         },
       });
 
-      // Se o usuário não existir, cria um novo
-      if (!existingUser) {
-        existingUser = await prisma.user.create({
-          data: {
-            email: user.email ?? "", // Garante que email seja string ou null
-            name: user.name ?? "", // Garante que name seja string ou null
-            image: user.image ?? "", // Garante que image seja string ou null
+      if (account) {
+        await prisma.account.upsert({
+          where: {
+            provider_providerAccountId: {
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+            },
+          },
+          update: {
+            accessToken: account.access_token ?? "no-token",
+          },
+          create: {
+            provider: account.provider,
+            type: account.type,
+            providerAccountId: account.providerAccountId,
+            accessToken: account.access_token ?? "no-token",
+            userId: existingUser.id,
           },
         });
-
-        // Caso tenha um 'account', cria a conta associada ao usuário
-        if (account) {
-          // Assegura que o 'account' tem todas as propriedades necessárias
-          await prisma.account.create({
-            data: {
-              provider: account.provider,
-              type: account.type,
-              providerAccountId: account.providerAccountId,
-              accessToken: account.access_token ?? "no-token", // Usa uma string vazia se accessToken for null ou undefined
-              userId: existingUser.id,
-            },
-          });
-        }
       }
 
-      return true; // Caso o login seja bem-sucedido, retornamos 'true'
+      return true;
     },
   },
 };

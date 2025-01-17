@@ -6,13 +6,17 @@ export async function POST(req: Request) {
   const { userId } = await req.json(); // No App Router, o body é extraído com req.json()
 
   try {
-    const userResponse = await prisma.user.findFirstOrThrow({
+    const userInfo = await prisma.couple.findFirst({
       where: {
-        id: userId,
+        userId,
       },
       select: {
-        email: true,
-        couple: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+        page: {
           select: {
             link: true,
           },
@@ -20,8 +24,13 @@ export async function POST(req: Request) {
       },
     });
 
+    // const link = couple[0]?.page.link as string;
+
+    const email = userInfo?.user.email;
+    const link = userInfo?.page.link;
+
     // Verificar se o e-mail não é null
-    if (!userResponse.email) {
+    if (!email) {
       return new Response(
         JSON.stringify({ message: "E-mail não encontrado" }),
         { status: 400 }
@@ -29,12 +38,9 @@ export async function POST(req: Request) {
     }
 
     // Gerar o QR code a partir do link
-    const qrCodeDataUrl = await QRCode.toDataURL(
-      userResponse.couple?.link as string
-    );
+    const qrCodeDataUrl = await QRCode.toDataURL(link as string);
 
     console.log("QR Code gerado com sucesso");
-    console.log(qrCodeDataUrl);
 
     // Configuração do transporte de e-mail usando nodemailer
     const transporter = nodemailer.createTransport({
@@ -48,7 +54,7 @@ export async function POST(req: Request) {
     // Opções do e-mail
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: userResponse.email, // Garantido que não é null
+      to: email, // Garantido que não é null
       subject: "Couplespace | QR Code para o seu link",
       html: `<!DOCTYPE html>
 <html lang="en">
@@ -103,7 +109,7 @@ export async function POST(req: Request) {
                   O QR Code para sua página chegou!
                 </p>
                 <p style="margin: 0; font-size: 16px">
-                  Link da página: <a href="${userResponse.couple?.link}" target="_blank">${userResponse.couple?.link}</a>
+                  Link da página: <a href="${link}" target="_blank">${link}</a>
                 </p>
               </td>
             </tr>
@@ -134,7 +140,7 @@ export async function POST(req: Request) {
 
 `,
       // html: `
-      //     <p>Olá, aqui está o QR Code para o link: <a href="${userResponse.couple?.link}">${userResponse.couple?.link}</a></p>
+      //     <p>Olá, aqui está o QR Code para o link: <a href="${userInfo.couple?.link}">${userInfo.couple?.link}</a></p>
       //     <p>Escaneie o QR code abaixo:</p>
       //     <img src="cid:qrCodeImage" alt="QR Code" style="max-width: 300px; height: auto;" />
       //   `,

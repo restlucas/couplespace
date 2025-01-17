@@ -3,11 +3,11 @@ import { Presentation } from "./presentation";
 import { Content } from "./content";
 import Link from "next/link";
 
-type PageProps = {
-  params: Promise<{ couple_id: string }>;
+type PageParams = {
+  params: Promise<{ page_id: string }>;
 };
 
-export type CouplePageProps = {
+export type PageProps = {
   id: string;
   link: string;
   name: string;
@@ -27,25 +27,35 @@ export type CouplePageProps = {
   pictures: { url: string; name: string }[] | [];
 };
 
-export async function generateMetadata({ params }: PageProps) {
-  const couple_id = (await params).couple_id;
+export async function generateMetadata({ params }: PageParams) {
+  const page_id = (await params).page_id;
   const data = await getPageDetails({
-    key: "coupleId",
-    value: couple_id,
+    key: "pageId",
+    value: page_id,
   });
 
+  const page = {
+    name: "...",
+    description: "...",
+  };
+
+  if (data && data.name) {
+    page.name = data.name;
+    page.description = data.description;
+  }
+
   return {
-    title: `Couplesace | Página de ${data.name}`,
-    description: `Página de ${data.name}`,
+    title: `Couplesace | Página de ${page.name}`,
+    description: `Página de ${page.name}`,
   };
 }
 
-export default async function CouplePage({ params }: PageProps) {
-  const couple_id = (await params).couple_id;
+export default async function CouplePage({ params }: PageParams) {
+  const page_id = (await params).page_id;
 
   const details = await getPageDetails({
-    key: "coupleId",
-    value: couple_id,
+    key: "pageId",
+    value: page_id,
   });
 
   if (!details) {
@@ -62,7 +72,7 @@ export default async function CouplePage({ params }: PageProps) {
     );
   }
 
-  const { name, date, picture, about, ...content } = details as CouplePageProps;
+  const { name, date, picture, about, ...content } = details as PageProps;
 
   const presentation = {
     name,

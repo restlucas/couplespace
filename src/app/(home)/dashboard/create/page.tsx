@@ -1,6 +1,7 @@
 "use client";
 
 import { useContext, useState } from "react";
+import { z } from "zod";
 
 import { useRouter } from "next/navigation";
 import { PicturesGrid } from "@/components/pictures-grid";
@@ -18,12 +19,23 @@ export interface Form {
   pictures: File[] | [];
 }
 
+export const formSchema = z.object({
+  name: z.string().min(1, "O nome é obrigatório"),
+  date: z.string().min(1, "A data é obrigatória"),
+  about: z
+    .string()
+    .min(10, "O campo 'sobre vocês' deve ter pelo menos 10 caracteres"),
+  picture: z.instanceof(File, { message: "A imagem principal é obrigatória" }),
+  pictures: z.array(z.instanceof(File)),
+});
+
 export default function NewPage() {
+  const router = useRouter();
   const { update } = useSession();
   const { user } = useContext(UserContext);
-  const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<Form>({
     name: "",
     date: "",
@@ -46,6 +58,20 @@ export default function NewPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    const validation = formSchema.safeParse(form);
+
+    if (!validation.success) {
+      setErrors(
+        validation.error.errors.reduce((acc, err) => {
+          acc[err.path[0]] = err.message;
+          return acc;
+        }, {} as Record<string, string>)
+      );
+      setIsLoading(false);
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append("userId", user.id);
@@ -95,6 +121,9 @@ export default function NewPage() {
             value={form.name || ""}
             onChange={handleChange}
           />
+          {errors.name && (
+            <span className="text-red-500 text-sm">{errors.name}</span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -107,6 +136,9 @@ export default function NewPage() {
             value={form.date || ""}
             onChange={handleChange}
           />
+          {errors.date && (
+            <span className="text-red-500 text-sm">{errors.date}</span>
+          )}
         </div>
 
         <div className="flex flex-col gap-2 col-span-full">
@@ -119,6 +151,9 @@ export default function NewPage() {
             value={form.about || ""}
             onChange={handleChange}
           />
+          {errors.about && (
+            <span className="text-red-500 text-sm">{errors.about}</span>
+          )}
         </div>
 
         <div className="col-span-full">
@@ -127,6 +162,9 @@ export default function NewPage() {
               <div className="flex flex-col items-center justify-center gap-4">
                 <span className="text-sm">Foto principal</span>
                 <Picture setForm={setForm} />
+                {errors.picture && (
+                  <span className="text-red-500 text-sm">{errors.picture}</span>
+                )}
               </div>
             </div>
 

@@ -49,10 +49,9 @@ model User {
   publications  Publication[]
 }
 
-model Couple {
+model Page {
   id            String  @id @default(cuid())
   link          String?
-  userId        String  @unique
   name          String
   about         String  @db.Text
   picture       String? @db.Text
@@ -63,18 +62,32 @@ model Couple {
 
   publications  Publication[]
   pictures      Picture[]
-  
+  couple        Couple[]
+}
+
+enum CoupleType {
+  OWNER
+  PARTNER
+}
+
+model Couple {
+  id            String  @id @default(cuid())
+  pageId        String
+  userId        String  @unique
+  type          CoupleType @default(OWNER)
+
+  page          Page    @relation(fields: [pageId], references: [id])
   user          User    @relation(fields: [userId], references: [id])
 }
 
 model Publication {
   id            String @id @default(cuid())
-  coupleId      String
+  pageId        String
   message       String @db.Text
   userId        String
   createdAt     DateTime  @default(now())
 
-  couple        Couple    @relation(fields: [coupleId], references: [id])
+  page        Page    @relation(fields: [pageId], references: [id])
   user        User    @relation(fields: [userId], references: [id])
 }
 
@@ -82,6 +95,15 @@ model Picture {
   id            String @id @default(cuid())
   url           String @db.Text
   name          String @db.Text
-  coupleId      String
-  couple        Couple    @relation(fields: [coupleId], references: [id])
+  pageId        String
+  page          Page    @relation(fields: [pageId], references: [id])
+}
+
+model Invite {
+  id         String   @id @default(cuid())  
+  email      String   
+  token      String   @unique  
+  expiresAt  DateTime 
+  createdAt  DateTime @default(now())
+  accepted   Boolean  @default(false) 
 }

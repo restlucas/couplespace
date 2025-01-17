@@ -1,11 +1,11 @@
 "use client";
 
-import { CoupleContext } from "@/contexts/CoupleContext";
+import { PageContext } from "@/contexts/PageContext";
 import { MusicNote } from "@phosphor-icons/react";
 import { useContext } from "react";
 
 export function Songs() {
-  const { content } = useContext(CoupleContext);
+  const { content } = useContext(PageContext);
 
   const songs = Array(6)
     .fill(null)

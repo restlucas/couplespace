@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Feed } from "./components/feed";
 import { Photos } from "./components/photos";
 import { List, Image as Picture } from "@phosphor-icons/react";
-import { CoupleContext, Page } from "@/contexts/CoupleContext";
+import { PageContext, Page } from "@/contexts/PageContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ interface LayoutProps {
 type DesktopLayoutProps = LayoutProps;
 
 export function Content({ data }: { data: Page }) {
-  const { handleContent } = useContext(CoupleContext);
+  const { handleContent } = useContext(PageContext);
 
   useEffect(() => {
     handleContent(data);

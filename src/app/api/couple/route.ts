@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { removeImage, updateImage, uploadImage } from "@/utils/firebaseStorage";
+import { sendEmail } from "@/utils/sendEmail";
+import { generateInviteToken } from "@/utils/generateInviteToken";
 
-// GET Functions
 async function getPage(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
@@ -14,9 +15,13 @@ async function getPage(request: Request) {
     );
   }
 
-  const page = await prisma.couple.findFirst({
+  const page = await prisma.page.findFirst({
     where: {
-      userId,
+      couple: {
+        some: {
+          userId,
+        },
+      },
     },
     select: {
       id: true,
@@ -42,10 +47,10 @@ async function getPage(request: Request) {
 
 async function getPageDetails(request: Request) {
   const { searchParams } = new URL(request.url);
-  const coupleId = searchParams.get("coupleId");
+  const pageId = searchParams.get("pageId");
   const userId = searchParams.get("userId");
 
-  const id = coupleId || userId;
+  const id = pageId || userId;
 
   if (!id) {
     return NextResponse.json(
@@ -54,14 +59,22 @@ async function getPageDetails(request: Request) {
     );
   }
 
+  console.log(id);
+
   try {
-    const whereCondition = coupleId
-      ? { id: coupleId }
+    const whereCondition = pageId
+      ? { id: pageId }
       : userId
-      ? { userId: userId }
+      ? {
+          couple: {
+            some: {
+              userId: userId,
+            },
+          },
+        }
       : undefined;
 
-    const page = await prisma.couple.findFirst({
+    const page = await prisma.page.findFirst({
       where: whereCondition,
       select: {
         id: true,
@@ -115,7 +128,48 @@ async function getPageDetails(request: Request) {
   }
 }
 
-// CREATE Functions
+async function getPartnerEmail(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get("userId") as string;
+
+  const { id: pageId } = await prisma.page.findFirstOrThrow({
+    where: {
+      couple: {
+        some: {
+          userId,
+        },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const couple = await prisma.couple.findFirst({
+    where: {
+      pageId,
+      userId: {
+        not: userId,
+      },
+    },
+    select: {
+      id: true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return NextResponse.json({
+    type: "success",
+    message: "Partner email retrieved successfully",
+    data: couple,
+  });
+}
+
 async function createPage(request: Request) {
   try {
     const baseUrl = process.env.NEXTAUTH_URL;
@@ -126,11 +180,17 @@ async function createPage(request: Request) {
     const about = formData.get("about") as string;
     const picture = formData.get("picture") as File;
 
-    const { id: coupleId } = await prisma.couple.create({
+    const { id: pageId } = await prisma.page.create({
       data: {
         name,
         date,
         about,
+      },
+    });
+
+    await prisma.couple.create({
+      data: {
+        pageId,
         userId,
       },
     });
@@ -138,11 +198,11 @@ async function createPage(request: Request) {
     let pictureUrl = "";
 
     if (picture) {
-      pictureUrl = await uploadImage(coupleId, "principal", picture);
+      pictureUrl = await uploadImage(pageId, "principal", picture);
     }
 
-    await prisma.couple.update({
-      where: { id: coupleId },
+    await prisma.page.update({
+      where: { id: pageId },
       data: {
         picture: pictureUrl,
       },
@@ -154,13 +214,13 @@ async function createPage(request: Request) {
       pictures.map(async (picture) => {
         if (picture instanceof File) {
           try {
-            const imageUrl = await uploadImage(coupleId, "gallery", picture);
+            const imageUrl = await uploadImage(pageId, "gallery", picture);
 
             await prisma.picture.create({
               data: {
                 name: picture.name,
                 url: imageUrl,
-                coupleId,
+                pageId,
               },
             });
           } catch (error) {
@@ -175,11 +235,11 @@ async function createPage(request: Request) {
       })
     );
 
-    const pageLink = `${baseUrl}/${coupleId}`;
+    const pageLink = `${baseUrl}/${pageId}`;
 
-    await prisma.couple.update({
+    await prisma.page.update({
       where: {
-        id: coupleId,
+        id: pageId,
       },
       data: {
         link: pageLink,
@@ -205,9 +265,13 @@ async function createPublication(request: Request) {
   try {
     const { message, userId } = await request.json();
 
-    const { id: coupleId } = await prisma.couple.findFirstOrThrow({
+    const { id: pageId } = await prisma.page.findFirstOrThrow({
       where: {
-        userId,
+        couple: {
+          some: {
+            userId,
+          },
+        },
       },
       select: {
         id: true,
@@ -217,7 +281,7 @@ async function createPublication(request: Request) {
     await prisma.publication.create({
       data: {
         message,
-        coupleId,
+        pageId,
         userId,
       },
     });
@@ -236,7 +300,84 @@ async function createPublication(request: Request) {
   }
 }
 
-// UPDATE Functions
+async function inviteUser(request: Request) {
+  const { userEmail: email, userId } = await request.json();
+
+  const inviteToken = generateInviteToken();
+
+  const { pageId } = await prisma.couple.findFirstOrThrow({
+    where: {
+      userId,
+    },
+    select: {
+      pageId: true,
+    },
+  });
+
+  await prisma.invite.create({
+    data: {
+      email,
+      token: inviteToken,
+      expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  const inviteLink = `${process.env.NEXTAUTH_URL}/accept-invite?token=${inviteToken}&pageId=${pageId}`;
+  await sendEmail(
+    email,
+    `Você foi convidado para o Couplespace! Clique no link para aceitar o convite: ${inviteLink}`
+  );
+
+  return NextResponse.json({
+    type: "success",
+    message: "Success on inviting user",
+    code: 202,
+  });
+}
+
+async function acceptInvite(request: Request) {
+  const { token, pageId } = await request.json();
+  const invite = await prisma.invite.findUnique({
+    where: { token },
+    select: { email: true, expiresAt: true },
+  });
+
+  if (!invite) {
+    throw new Error("Convite inválido.");
+  }
+
+  if (invite.expiresAt < new Date()) {
+    throw new Error("Convite expirado.");
+  }
+
+  // Atualizar o convite como aceito
+  await prisma.invite.update({
+    where: { token },
+    data: { accepted: true },
+  });
+
+  // Criar o usuário no banco apenas com o email
+  const user = await prisma.user.create({
+    data: { email: invite.email },
+  });
+
+  // Criar o registro na tabela Couple
+  await prisma.couple.create({
+    data: {
+      pageId,
+      userId: user.id,
+      type: "PARTNER", // Define como parceiro, não como proprietário
+    },
+  });
+
+  // return user;
+  return NextResponse.json({
+    type: "success",
+    message: "Success on accepting invite",
+    code: 202,
+  });
+}
+
 async function updatePage(request: Request) {
   try {
     const formData = await request.formData();
@@ -247,23 +388,23 @@ async function updatePage(request: Request) {
     const picture = formData.get("picture") as File;
     const pictures = formData.getAll("pictures");
 
-    const { id: coupleId } = await prisma.couple.findFirstOrThrow({
+    const { pageId } = await prisma.couple.findFirstOrThrow({
       where: {
         userId,
       },
       select: {
-        id: true,
+        pageId: true,
       },
     });
 
-    await removeImage(coupleId, "principal");
-    await removeImage(coupleId, "gallery");
+    await removeImage(pageId, "principal");
+    await removeImage(pageId, "gallery");
 
     let pictureUrl = "";
-    pictureUrl = await updateImage(coupleId, "principal", picture);
+    pictureUrl = await updateImage(pageId, "principal", picture);
 
-    await prisma.couple.update({
-      where: { id: coupleId },
+    await prisma.page.update({
+      where: { id: pageId },
       data: {
         picture: pictureUrl,
         name,
@@ -272,25 +413,25 @@ async function updatePage(request: Request) {
       },
     });
 
-    // Deleting all data by coupleId
+    // Deleting all data by pageId
     await prisma.picture.deleteMany({
       where: {
-        coupleId,
+        pageId,
       },
     });
 
-    // Creating new data by coupleId
+    // Creating new data by pageId
     await Promise.all(
       pictures.map(async (file) => {
         if (file instanceof File) {
           try {
-            const imageUrl = await updateImage(coupleId, "gallery", file);
+            const imageUrl = await updateImage(pageId, "gallery", file);
 
             await prisma.picture.create({
               data: {
                 name: file.name,
                 url: imageUrl,
-                coupleId,
+                pageId,
               },
             });
           } catch (error) {
@@ -305,7 +446,7 @@ async function updatePage(request: Request) {
       })
     );
 
-    // const { id: coupleId } = await prisma.couple.create({
+    // const { id: pageId } = await prisma.page.create({
     //   data: {
     //     name,
     //     date,
@@ -317,11 +458,11 @@ async function updatePage(request: Request) {
     // const pictureUrl = "";
 
     // if (picture) {
-    //   pictureUrl = await updateImage(coupleId, "principal", picture);
+    //   pictureUrl = await updateImage(pageId, "principal", picture);
     // }
 
-    // await prisma.couple.update({
-    //   where: { id: coupleId },
+    // await prisma.page.update({
+    //   where: { id: pageId },
     //   data: {
     //     picture: pictureUrl,
     //   },
@@ -333,13 +474,13 @@ async function updatePage(request: Request) {
     //   pictures.map(async (file) => {
     //     if (file instanceof File) {
     //       try {
-    //         const imageUrl = await updateImage(coupleId, "gallery", file);
+    //         const imageUrl = await updateImage(pageId, "gallery", file);
 
     //         await prisma.picture.create({
     //           data: {
     //             name: file.name,
     //             url: imageUrl,
-    //             coupleId,
+    //             pageId,
     //           },
     //         });
     //       } catch (error) {
@@ -354,11 +495,11 @@ async function updatePage(request: Request) {
     //   })
     // );
 
-    // const pageLink = `${baseUrl}/${coupleId}`;
+    // const pageLink = `${baseUrl}/${pageId}`;
 
-    // await prisma.couple.update({
+    // await prisma.page.update({
     //   where: {
-    //     id: coupleId,
+    //     id: pageId,
     //   },
     //   data: {
     //     link: pageLink,
@@ -379,6 +520,7 @@ async function updatePage(request: Request) {
   }
 }
 
+// Handlers
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action");
@@ -389,6 +531,10 @@ export async function GET(request: NextRequest) {
 
   if (action === "getPageDetails") {
     return await getPageDetails(request);
+  }
+
+  if (action === "getPartnerEmail") {
+    return await getPartnerEmail(request);
   }
 
   return NextResponse.json(
@@ -413,8 +559,16 @@ export async function POST(request: NextRequest) {
     if (action === "updatePage") {
       return await updatePage(request);
     }
+
+    if (action === "inviteUser") {
+      return await inviteUser(request);
+    }
+
+    if (action === "acceptInvite") {
+      return await acceptInvite(request);
+    }
   } catch (error) {
-    console.error("Error generating page:", error);
+    console.error("Error on post action:", error);
 
     return NextResponse.json(
       {

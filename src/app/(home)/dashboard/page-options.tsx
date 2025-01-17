@@ -2,7 +2,13 @@
 
 import { UserContext } from "@/contexts/UserContext";
 import { sendQrCode } from "@/services/couple";
-import { Eye, PencilSimple, Plus, QrCode } from "@phosphor-icons/react";
+import {
+  Eye,
+  PencilSimple,
+  Plus,
+  QrCode,
+  UserPlus,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 
@@ -23,16 +29,10 @@ export function PageOptions() {
   if (loading) {
     return (
       <div className="space-y-8 animate-pulse">
-        <div className="w-40 h-10 rounded-md bg-foreground" />
+        <div className="mb-8 w-40 h-10 rounded-md bg-foreground" />
 
-        <div className="w-40 h-7 rounded-md bg-foreground" />
-
-        <div>
-          <div className="w-40 mb-2 h-7 rounded-md bg-foreground" />
-          <div className="w-full h-10 rounded-md bg-foreground" />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 justify-center gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 justify-center gap-2">
+          <div className="h-10 rounded-md bg-foreground" />
           <div className="h-10 rounded-md bg-foreground" />
           <div className="h-10 rounded-md bg-foreground" />
           <div className="h-10 rounded-md bg-foreground" />
@@ -50,49 +50,50 @@ export function PageOptions() {
 
       {user.page.id !== "" ? (
         <>
-          <h2 className="text-lg font-semibold">Minha página</h2>
-
           <div>
-            <p className="font-semibold mb-2">Link</p>
-            <input
-              type="text"
-              className="flex-1 h-10 w-full px-3 rounded-md bg-foreground"
-              readOnly
-              value={user.page.link || ""}
-            />
+            {/* <span>{user.page.link}</span> */}
+            {/* <p className="font-semibold mb-2">Minha página</p> */}
+            <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-3 gap-2 rounded-md text-xs">
+              <Link
+                href={`/dashboard/new-publication`}
+                className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
+              >
+                <Plus size={20} />
+                <span>Nova publicação</span>
+              </Link>
+              <Link
+                href={`/dashboard/edit`}
+                className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
+              >
+                <PencilSimple size={20} />
+                <span>Editar página</span>
+              </Link>
+              <Link
+                href={`${user.page.link}`}
+                target="_blank"
+                className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
+              >
+                <Eye size={20} />
+                <span>Visualizar página</span>
+              </Link>
+              <Link
+                href="/dashboard/invite"
+                className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
+              >
+                <UserPlus size={20} />
+                <span>Convidar parceiro(a)</span>
+              </Link>
+              <button
+                onClick={handleQrCode}
+                className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
+              >
+                <QrCode size={20} />
+                <span>Enviar QR Code</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 justify-center gap-2">
-            <Link
-              href={`/dashboard/new-publication`}
-              className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
-            >
-              <Plus size={20} />
-              <span>Nova publicação</span>
-            </Link>
-            <Link
-              href={`/dashboard/edit`}
-              className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
-            >
-              <PencilSimple size={20} />
-              <span>Editar página</span>
-            </Link>
-            <Link
-              href={`${user.page.link}`}
-              target="_blank"
-              className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
-            >
-              <Eye size={20} />
-              <span>Visualizar</span>
-            </Link>
-            <button
-              onClick={handleQrCode}
-              className="flex items-center justify-center gap-4 h-10 px-6 rounded-md duration-100 hover:bg-foreground font-semibold"
-            >
-              <QrCode size={20} />
-              <span>Enviar QR Code</span>
-            </button>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 justify-center gap-2"></div>
         </>
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center gap-8">

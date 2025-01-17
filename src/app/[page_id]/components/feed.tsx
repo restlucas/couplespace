@@ -1,11 +1,11 @@
 "use client";
 
-import { CoupleContext } from "@/contexts/CoupleContext";
+import { PageContext } from "@/contexts/PageContext";
 import { timeSinceRecord } from "@/utils/formatDate";
 import { useContext } from "react";
 
 export function Feed() {
-  const { content } = useContext(CoupleContext);
+  const { content } = useContext(PageContext);
 
   return (
     <div className="animate-fade-right">

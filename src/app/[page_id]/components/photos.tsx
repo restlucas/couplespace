@@ -2,12 +2,12 @@
 
 import { Image as Picture } from "@phosphor-icons/react";
 
-import { CoupleContext } from "@/contexts/CoupleContext";
+import { PageContext } from "@/contexts/PageContext";
 import { useContext, useState } from "react";
 import Image from "next/image";
 
 export function Photos() {
-  const { content } = useContext(CoupleContext);
+  const { content } = useContext(PageContext);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const pictures = Array(6)

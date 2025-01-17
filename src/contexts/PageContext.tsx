@@ -18,20 +18,18 @@ export interface Page {
   pictures: { url: string; name: string }[] | [];
 }
 
-interface CoupleContextType {
+interface PageContextType {
   content: Page;
   handleContent: (content: Page) => void;
 }
 
-interface CoupleContextProviderProps {
+interface PageContextProviderProps {
   children: ReactNode;
 }
 
-export const CoupleContext = createContext({} as CoupleContextType);
+export const PageContext = createContext({} as PageContextType);
 
-export function CoupleContextProvider({
-  children,
-}: CoupleContextProviderProps) {
+export function PageContextProvider({ children }: PageContextProviderProps) {
   const [content, setContent] = useState<Page>({
     id: "",
     link: "",
@@ -44,8 +42,8 @@ export function CoupleContextProvider({
   };
 
   return (
-    <CoupleContext.Provider value={{ content, handleContent }}>
+    <PageContext.Provider value={{ content, handleContent }}>
       {children}
-    </CoupleContext.Provider>
+    </PageContext.Provider>
   );
 }

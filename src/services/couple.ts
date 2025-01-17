@@ -61,6 +61,36 @@ export const getPageDetails = async (identifier: {
   }
 };
 
+export const getPartnerEmail = async (userId: string) => {
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/couple?action=getPartnerEmail&userId=${encodeURIComponent(
+        userId
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const { data } = await response.json();
+
+    return data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on fetch partner email:", error);
+      return {
+        type: "error",
+        message: "Error on fetch partner email",
+      };
+    } else {
+      console.error("Unknown error", error);
+    }
+  }
+};
+
 export const createPage = async (formData: FormData) => {
   try {
     const response = await fetch(`${baseUrl}/api/couple?action=createPage`, {
@@ -133,6 +163,33 @@ export const updatePage = async (formData: FormData) => {
       console.error("Unknown error", error);
     }
   }
+};
+
+export const inviteUser = async (data: {
+  userEmail: string;
+  userId: string;
+}) => {
+  const response = await fetch(`${baseUrl}/api/couple?action=inviteUser`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return await response.json();
+};
+
+export const acceptInvite = async (data: { token: string; pageId: string }) => {
+  const response = await fetch(`${baseUrl}/api/couple?action=acceptInvite`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return await response.json();
 };
 
 export const sendQrCode = async (userId: string) => {
