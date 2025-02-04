@@ -1,0 +1,70 @@
+{
+  "Home": {
+    "title": "Save your love and celebrate your story.",
+    "paragraph": "Turn moments into memories that will last forever.",
+    "button": {
+      "login": "Start here 😊",
+      "dashboard": "Go to dashboard 😊"
+    }
+  },
+  "Faq": {
+    "purpose": {
+      "title": "What is the purpose of Couplespace?",
+      "description": "Couplespace was created to be a virtual space for couples, allowing you to express your love for your partner in a unique way."
+    },
+    "howDoesItWork": {
+      "title": "How does Couplespace work?",
+      "firstStep": "Log in using your Google account.",
+      "secondStep": "After logging in, you will be redirected to your dashboard.",
+      "thirdStep": "In the dashboard, you can create, edit, and view your page, receive the QR Code by email, and add your partner’s email so they can also make posts."
+    },
+    "fileStorage": {
+      "title": "How does image storage work?",
+      "description": "We use free Firebase Storage, and to avoid costs, each page has a limit of 6 images in a gallery. Posts do not support images."
+    }
+  },
+  "Login": {
+    "title": "Login",
+    "assistantText": "Log in using one of the methods below"
+  },
+  "Dashboard": {
+    "welcome": "Hello, ",
+    "noPageFound": "You don't have a page yet!",
+    "button": {
+      "create": "Create",
+      "edit": "Edit page",
+      "show": "View page",
+      "invite": "Invite partner",
+      "qrcode": "Send QR Code"
+    }
+  },
+  "Form": {
+    "title": "Page info",
+    "assistantText": "To create your page, fill in the form",
+    "field": {
+      "coupleName": "Couple's name",
+      "startDate": "Start date",
+      "aboutYou": "About you",
+      "mainPhoto": "Main photo",
+      "secondaryPhotos": "Secondary photos"
+    },
+    "error": {
+      "coupleName": "Couple name is required",
+      "startDate": "Start date is required",
+      "aboutYou": "About you field must be at least 10 characters",
+      "mainPhoto": "Main photo is required"
+    },
+    "button": {
+      "back": "Back",
+      "save": "Save"
+    }
+  },
+  "Page": {
+    "count": "Counter",
+    "about": "About us",
+    "photos": "Photos",
+    "feed": "Feed",
+    "by": "by ",
+    "noPublications": "No publications yet 😪"
+  }
+}

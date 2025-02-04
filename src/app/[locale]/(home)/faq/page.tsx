@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Couplespace | FAQ",
@@ -6,22 +7,18 @@ export const metadata: Metadata = {
 };
 
 export default function Faq() {
+  const t = useTranslations("Faq");
+
   return (
     <section className="w-full h-full flex items-center justify-center">
       <div className="w-[1024px] animate-fade-right p-8 bg-foreground-light rounded-md shadow-md space-y-8">
         <div>
-          <h3 className="text-2xl font-bold mb-4">
-            Qual é o objetivo do Couplespace?
-          </h3>
-          <p>
-            O Couplespace foi criado para ser um espaço virtual para casais,
-            permitindo que você demonstre seu amor pelo(a) companheiro(a) de
-            forma única.
-          </p>
+          <h3 className="text-2xl font-bold mb-4">{t("purpose.title")}</h3>
+          <p>{t("purpose.description")}</p>
         </div>
         <div>
           <h3 className="text-2xl font-bold mb-4">
-            Como funciona o Couplespace?
+            {t("howDoesItWork.title")}
           </h3>
           <div className="flex flex-col gap-4 items-start justify-center">
             <div className="flex items-start gap-3">
@@ -31,7 +28,7 @@ export default function Faq() {
               >
                 1
               </span>
-              <span>Faça login usando sua conta Google.</span>
+              <span>{t("howDoesItWork.firstStep")}</span>
             </div>
             <div className="flex items-start gap-3">
               <span
@@ -40,9 +37,7 @@ export default function Faq() {
               >
                 2
               </span>
-              <span>
-                Após o login, você será redirecionado ao seu painel (dashboard).
-              </span>
+              <span>{t("howDoesItWork.secondStep")}</span>
             </div>
             <div className="flex items-start gap-3">
               <span
@@ -51,23 +46,13 @@ export default function Faq() {
               >
                 3
               </span>
-              <span>
-                No painel, você pode criar, editar e visualizar sua página,
-                receber o QR Code por e-mail e adicionar o email de seu
-                parceiro(a) para que ele(a) também possa realizar publicações.
-              </span>
+              <span>{t("howDoesItWork.thirdStep")}</span>
             </div>
           </div>
         </div>
         <div>
-          <h3 className="text-2xl font-bold mb-4">
-            Como funciona o armazenamento de imagens?
-          </h3>
-          <p>
-            Utilizamos o Firebase Storage gratuito, e para evitar custos, cada
-            página tem um limite de 6 imagens em uma galeria. Publicações não
-            suportam imagens.
-          </p>
+          <h3 className="text-2xl font-bold mb-4">{t("fileStorage.title")}</h3>
+          <p>{t("fileStorage.description")}</p>
         </div>
       </div>
     </section>

@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { Image as Picture } from "@phosphor-icons/react";
 import dateDifference from "@/utils/formatDate";
+import { useLocale, useTranslations } from "next-intl";
 
 interface PresentationProps {
   name: string;
@@ -17,6 +18,9 @@ export function Presentation({
 }: {
   data: PresentationProps;
 }) {
+  const locale = useLocale();
+  const t = useTranslations("Page");
+
   return (
     <div className="my-10 mx-8 flex flex-col items-center justify-center">
       <div className="h-44 w-44 rounded-full overflow-hidden relative shadow-lg">
@@ -41,14 +45,14 @@ export function Presentation({
 
       <div className="w-full lg:w-[980px] xl:w-[1024px] rounded-xl p-4 sm:p-6 bg-foreground shadow-md">
         <div className="text-center mb-4">
-          <h4 className="italic text-sm font-">Contador</h4>
+          <h4 className="italic text-sm font-">{t("count")}</h4>
           <span className="text-xl font-bold mb-4">
-            {dateDifference(presentation.date)}
+            {dateDifference(presentation.date, locale)}
           </span>
         </div>
 
         <div>
-          <p className="italic font-bold">Sobre nós</p>
+          <p className="italic font-bold">{t("about")}</p>
           <span className="text-sm">{presentation.about}</span>
         </div>
       </div>

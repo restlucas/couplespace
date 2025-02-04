@@ -1,0 +1,70 @@
+{
+  "Home": {
+    "title": "Guarde seu amor e celebre sua história.",
+    "paragraph": "Transforme momentos em lembranças que durarão para sempre.",
+    "button": {
+      "login": "Comece por aqui 😊",
+      "dashboard": "Ir para o dashboard 😊"
+    }
+  },
+  "Faq": {
+    "purpose": {
+      "title": "Qual é o objetivo do Couplespace?",
+      "description": "O Couplespace foi criado para ser um espaço virtual para casais, permitindo que você demonstre seu amor pelo(a) companheiro(a) de forma única."
+    },
+    "howDoesItWork": {
+      "title": "Como funciona o Couplespace?",
+      "firstStep": "Faça login usando sua conta Google.",
+      "secondStep": "Após o login, você será redirecionado ao seu painel (dashboard).",
+      "thirdStep": "No painel, você pode criar, editar e visualizar sua página, receber o QR Code por e-mail e adicionar o email de seu parceiro(a) para que ele(a) também possa realizar publicações."
+    },
+    "fileStorage": {
+      "title": "Como funciona o armazenamento de imagens?",
+      "description": "Utilizamos o Firebase Storage gratuito, e para evitar custos, cada página tem um limite de 6 imagens em uma galeria. Publicações não suportam imagens."
+    }
+  },
+  "Login": {
+    "title": "Login",
+    "assistantText": "Faça login usando um dos métodos abaixo"
+  },
+  "Dashboard": {
+    "welcome": "Olá, ",
+    "noPageFound": "Você ainda não tem uma página!",
+    "button": {
+      "create": "Criar",
+      "edit": "Editar página",
+      "show": "Visualizar página",
+      "invite": "Convidar parceiro(a)",
+      "qrcode": "Enviar QR Code"
+    }
+  },
+  "Form": {
+    "title": "Informações da página",
+    "assistantText": "Para criar sua página preencha o formulário",
+    "field": {
+      "coupleName": "Nome do casal",
+      "startDate": "Data de início",
+      "aboutYou": "Sobre vocês",
+      "mainPhoto": "Foto principal",
+      "secondaryPhotos": "Fotos secundárias"
+    },
+    "error": {
+      "coupleName": "Nome do casal é obrigatório",
+      "startDate": "Data de início é obrigatório",
+      "aboutYou": "Sobre vocês deve ter pelo menos 10 caracteres",
+      "mainPhoto": "A foto principal é obrigatória"
+    },
+    "button": {
+      "back": "Voltar",
+      "save": "Salvar"
+    }
+  },
+  "Page": {
+    "count": "Contador",
+    "about": "Sobre nós",
+    "photos": "Fotos",
+    "feed": "Feed",
+    "by": "por ",
+    "noPublications": "Nenhuma publicação até o momento 😪"
+  }
+}

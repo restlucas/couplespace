@@ -1,12 +1,19 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/pt-br";
+import "dayjs/locale/en";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
-export default function dateDifference(dateFromDatabase: string): string {
+export default function dateDifference(
+  dateFromDatabase: string,
+  locale: string
+): string {
   if (!dateFromDatabase) return "--:--:--";
+
+  dayjs.locale(locale);
 
   const startDate = dayjs(dateFromDatabase);
   const currentDate = dayjs();
@@ -23,24 +30,53 @@ export default function dateDifference(dateFromDatabase: string): string {
   let result = "";
 
   if (totalYears > 0) {
-    result += `${totalYears} ano${totalYears > 1 ? "s" : ""}`;
+    result += `${totalYears} ${
+      totalYears > 1
+        ? locale === "pt-br"
+          ? "anos"
+          : "years"
+        : locale === "pt-br"
+        ? "ano"
+        : "year"
+    }`;
   }
 
   if (remainingMonths > 0) {
     if (result) result += ", ";
-    result += `${remainingMonths} ${remainingMonths > 1 ? "meses" : "mês"}`;
+    result += `${remainingMonths} ${
+      remainingMonths > 1
+        ? locale === "pt-br"
+          ? "meses"
+          : "months"
+        : locale === "pt-br"
+        ? "mês"
+        : "month"
+    }`;
   }
 
   if (remainingDays > 0 || (!totalYears && !totalMonths)) {
     if (result) result += ", ";
-    result += `${remainingDays} dia${remainingDays > 1 ? "s" : ""}`;
+    result += `${remainingDays} ${
+      remainingDays > 1
+        ? locale === "pt-br"
+          ? "dias"
+          : "days"
+        : locale === "pt-br"
+        ? "dia"
+        : "day"
+    }`;
   }
 
-  return result || "0 dia";
+  return result || (locale === "pt-br" ? "0 dia" : "0 day");
 }
 
-export function timeSinceRecord(dateFromDatabase: string | Date): string {
+export function timeSinceRecord(
+  dateFromDatabase: string | Date,
+  locale: string
+): string {
   if (!dateFromDatabase) return "--:--:--";
+
+  dayjs.locale(locale);
 
   const startDate = dayjs(dateFromDatabase);
   const currentDate = dayjs();
@@ -52,27 +88,44 @@ export function timeSinceRecord(dateFromDatabase: string | Date): string {
   const differenceInYears = currentDate.diff(startDate, "years");
 
   if (differenceInMinutes < 60) {
-    // Less than 1 hour
     return differenceInMinutes === 1
-      ? "há 1 minuto"
-      : `há ${differenceInMinutes} minutos`;
+      ? locale === "pt-br"
+        ? "há 1 minuto"
+        : "1 minute ago"
+      : locale === "pt-br"
+      ? `há ${differenceInMinutes} minutos`
+      : `${differenceInMinutes} minutes ago`;
   } else if (differenceInHours < 24) {
-    // Less than 1 day
     return differenceInHours === 1
-      ? "há 1 hora"
-      : `há ${differenceInHours} horas`;
+      ? locale === "pt-br"
+        ? "há 1 hora"
+        : "1 hour ago"
+      : locale === "pt-br"
+      ? `há ${differenceInHours} horas`
+      : `${differenceInHours} hours ago`;
   } else if (differenceInDays < 30) {
-    // Less than 1 month
-    return differenceInDays === 1 ? "há 1 dia" : `há ${differenceInDays} dias`;
+    return differenceInDays === 1
+      ? locale === "pt-br"
+        ? "há 1 dia"
+        : "1 day ago"
+      : locale === "pt-br"
+      ? `há ${differenceInDays} dias`
+      : `${differenceInDays} days ago`;
   } else if (differenceInMonths < 12) {
-    // Less than 1 year
     return differenceInMonths === 1
-      ? "há 1 mês"
-      : `há ${differenceInMonths} meses`;
+      ? locale === "pt-br"
+        ? "há 1 mês"
+        : "1 month ago"
+      : locale === "pt-br"
+      ? `há ${differenceInMonths} meses`
+      : `${differenceInMonths} months ago`;
   } else {
-    // 1 year or more
     return differenceInYears === 1
-      ? "há 1 ano"
-      : `há ${differenceInYears} anos`;
+      ? locale === "pt-br"
+        ? "há 1 ano"
+        : "1 year ago"
+      : locale === "pt-br"
+      ? `há ${differenceInYears} anos`
+      : `${differenceInYears} years ago`;
   }
 }

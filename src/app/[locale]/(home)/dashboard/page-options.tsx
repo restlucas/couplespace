@@ -9,12 +9,14 @@ import {
   QrCode,
   UserPlus,
 } from "@phosphor-icons/react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useContext, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function PageOptions() {
   const { user } = useContext(UserContext);
   const [loading, setIsLoading] = useState(true);
+  const t = useTranslations("Dashboard");
 
   const handleQrCode = async () => {
     await sendQrCode(user.id);
@@ -45,7 +47,7 @@ export function PageOptions() {
   return (
     <div className="space-y-8">
       <h3 className="mb-8 text-xl">
-        Olá, <span className="font-bold">{user.name}</span>
+        {t("welcome")} <span className="font-bold">{user.name}</span>
       </h3>
 
       {user.page.id !== "" ? (
@@ -66,7 +68,7 @@ export function PageOptions() {
                 className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
               >
                 <PencilSimple size={20} />
-                <span>Editar página</span>
+                <span>{t("button.edit")}</span>
               </Link>
               <Link
                 href={`${user.page.link}`}
@@ -74,21 +76,21 @@ export function PageOptions() {
                 className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
               >
                 <Eye size={20} />
-                <span>Visualizar página</span>
+                <span>{t("button.show")}</span>
               </Link>
               <Link
                 href="/dashboard/invite"
                 className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
               >
                 <UserPlus size={20} />
-                <span>Convidar parceiro(a)</span>
+                <span>{t("button.invite")}</span>
               </Link>
               <button
                 onClick={handleQrCode}
                 className="flex items-center justify-center gap-2 w-full h-10 rounded-md duration-100 bg-foreground"
               >
                 <QrCode size={20} />
-                <span>Enviar QR Code</span>
+                <span>{t("button.qrcode")}</span>
               </button>
             </div>
           </div>
@@ -97,12 +99,12 @@ export function PageOptions() {
         </>
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center gap-8">
-          <h3 className="font-bold text-2xl">Você ainda não tem uma página!</h3>
+          <h3 className="font-bold text-2xl">{t("noPageFound")}</h3>
           <Link
             href="/dashboard/create"
             className="px-8 py-3 rounded-md font-bold bg-gradient-to-r from-rose to-blue-clean"
           >
-            Criar
+            {t("button.create")}
           </Link>
         </div>
       )}

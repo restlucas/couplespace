@@ -7,24 +7,26 @@ import { transformToFile } from "@/utils/transformToFile";
 import { Picture } from "@/components/picture";
 import { Form } from "../create/page";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { UserContext } from "@/contexts/UserContext";
-import { PageProps } from "@/app/[page_id]/page";
+import { PageProps } from "@/app/[locale]/[page_id]/page";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório"),
-  date: z.string().min(1, "A data é obrigatória"),
-  about: z
-    .string()
-    .min(10, "O campo 'sobre vocês' deve ter pelo menos 10 caracteres"),
-  picture: z.instanceof(File, { message: "A imagem principal é obrigatória" }),
-  pictures: z.array(z.instanceof(File)),
-});
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    name: z.string().min(1, t("error.coupleName")),
+    date: z.string().min(1, t("error.startDate")),
+    about: z.string().min(10, t("error.aboutYou")),
+    picture: z.instanceof(File, { message: t("error.mainPhoto") }),
+    pictures: z.array(z.instanceof(File)),
+  });
 
 export default function EditPage() {
   const router = useRouter();
   const { user } = useContext(UserContext);
+  const t = useTranslations("Form");
+  const schema = formSchema(t);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -52,7 +54,7 @@ export default function EditPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const validation = formSchema.safeParse(form);
+    const validation = schema.safeParse(form);
 
     if (!validation.success) {
       setErrors(
@@ -123,7 +125,7 @@ export default function EditPage() {
   return (
     <Suspense>
       <div className="space-y-8">
-        <h3 className="font-bold">Editando informações da página</h3>
+        <h3 className="font-bold">{t("title")}</h3>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-pulse">
@@ -176,7 +178,7 @@ export default function EditPage() {
               className="grid grid-cols-1 sm:grid-cols-2 gap-6"
             >
               <div className="flex flex-col gap-2">
-                <label htmlFor="name">Nome do casal</label>
+                <label htmlFor="name">{t("field.coupleName")}</label>
                 <input
                   id="name"
                   name="name"
@@ -191,7 +193,7 @@ export default function EditPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="date">Início de relacionamento</label>
+                <label htmlFor="date">{t("field.startDate")}</label>
                 <input
                   id="date"
                   name="date"
@@ -206,7 +208,7 @@ export default function EditPage() {
               </div>
 
               <div className="flex flex-col gap-2 col-span-full">
-                <label htmlFor="about">Sobre vocês</label>
+                <label htmlFor="about">{t("field.aboutYou")}</label>
                 <textarea
                   id="about"
                   name="about"
@@ -224,7 +226,7 @@ export default function EditPage() {
                 <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="flex items-center justify-center gap-2 rounded-md border-dashed border-2 border-foreground p-6">
                     <div className="flex flex-col items-center justify-center gap-4">
-                      <span className="text-sm">Foto principal</span>
+                      <span className="text-sm">{t("field.mainPhoto")}</span>
                       <Picture picture={form.picture} setForm={setForm} />
                       {errors.picture && (
                         <span className="text-red-500 text-sm">
@@ -235,7 +237,9 @@ export default function EditPage() {
                   </div>
 
                   <div className="rounded-md border-dashed border-2 border-foreground p-4">
-                    <span className="text-xs mb-4">Fotos</span>
+                    <span className="text-xs mb-4">
+                      {t("field.secondaryPhotos")}
+                    </span>
                     <PicturesGrid pictures={form.pictures} setForm={setForm} />
                   </div>
                 </div>
@@ -247,7 +251,7 @@ export default function EditPage() {
                 href="/dashboard"
                 className="flex-1 sm:flex-none h-10 w-32 font-bold rounded-md duration-100 hover:bg-foreground flex items-center justify-center"
               >
-                Voltar
+                {t("button.back")}
               </Link>
               <button
                 form="pageForm"
@@ -258,7 +262,7 @@ export default function EditPage() {
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   </div>
                 ) : (
-                  <span>Salvar</span>
+                  <span>{t("button.save")}</span>
                 )}
               </button>
             </div>

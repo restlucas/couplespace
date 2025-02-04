@@ -2,7 +2,7 @@
 
 import { UserContext } from "@/contexts/UserContext";
 import { QuestionMark, SignOut } from "@phosphor-icons/react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useContext } from "react";
 
 export function Header() {

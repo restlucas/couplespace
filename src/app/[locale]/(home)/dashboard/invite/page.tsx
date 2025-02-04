@@ -1,26 +1,23 @@
 "use client";
 
-import { TextEditor } from "@/components/TextEditor";
 import { UserContext } from "@/contexts/UserContext";
-import { createPublication } from "@/services/couple";
-import Link from "next/link";
+import { inviteUser } from "@/services/couple";
+import { Link } from "@/i18n/routing";
 import { useRouter } from "next/navigation";
-import { FormEvent, useContext, useState } from "react";
+import { useContext, useState } from "react";
 
-export default function NewPublicationPage() {
+export default function Invite() {
   const router = useRouter();
   const { user } = useContext(UserContext);
-
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string>("");
+  const [userEmail, setUserEmail] = useState("");
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const response = await createPublication({ message, userId: user.id });
-
+    const response = await inviteUser({ userEmail, userId: user.id });
     if (response.type === "success") {
-      alert("Publicação criada com sucesso!");
+      alert("Convite enviado com sucesso!");
       await new Promise((resolve) => setTimeout(resolve, 2000));
       router.push("/dashboard");
     }
@@ -28,14 +25,25 @@ export default function NewPublicationPage() {
 
   return (
     <div className="space-y-8">
-      <h3 className="font-bold">Criar nova publicação</h3>
+      <h3 className="mb-8 text-xl">
+        <span className="font-bold">Adicionar parceiro(a)</span>
+      </h3>
 
       <form
-        id="newPublicationForm"
+        id="partnerForm"
         onSubmit={handleSubmit}
-        className="space-y-4"
+        className="flex flex-col gap-2"
       >
-        <TextEditor setContent={setMessage} />
+        <label htmlFor="userEmail">Email do parceiro(a)</label>
+        <input
+          id="userEmail"
+          name="userEmail"
+          type="email"
+          value={userEmail || ""}
+          onChange={(e) => setUserEmail(e.target.value)}
+          className="h-10 px-4 rounded-md bg-foreground"
+          required
+        />
       </form>
 
       <div className="flex items-center justify-end gap-4">
@@ -46,7 +54,7 @@ export default function NewPublicationPage() {
           Voltar
         </Link>
         <button
-          form="newPublicationForm"
+          form="partnerForm"
           className="flex-1 sm:flex-none h-10 w-32 rounded-md bg-gradient-to-r from-rose to-blue-clean font-bold"
         >
           {isLoading ? (
@@ -54,7 +62,7 @@ export default function NewPublicationPage() {
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             </div>
           ) : (
-            <span>Criar</span>
+            <span>Salvar</span>
           )}
         </button>
       </div>

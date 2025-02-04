@@ -1,4 +1,4 @@
-import { Form } from "@/app/(home)/dashboard/create/page";
+import { Form } from "@/app/[locale]/(home)/dashboard/create/page";
 import { CameraPlus } from "@phosphor-icons/react";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";

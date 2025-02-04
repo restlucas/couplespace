@@ -1,7 +1,7 @@
 import { getPageDetails } from "@/services/couple";
 import { Presentation } from "./presentation";
 import { Content } from "./content";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 type PageParams = {
   params: Promise<{ page_id: string }>;

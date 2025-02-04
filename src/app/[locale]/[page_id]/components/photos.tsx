@@ -5,10 +5,12 @@ import { Image as Picture } from "@phosphor-icons/react";
 import { PageContext } from "@/contexts/PageContext";
 import { useContext, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export function Photos() {
   const { content } = useContext(PageContext);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const t = useTranslations("Page");
 
   const pictures = Array(6)
     .fill(null)
@@ -16,7 +18,7 @@ export function Photos() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold mb-6 drop-shadow-lg">Fotos</h3>
+      <h3 className="text-2xl font-bold mb-6 drop-shadow-lg">{t("photos")}</h3>
       <div className="grid grid-cols-3 grid-rows-2 lg:grid-cols-2 lg:grid-rows-3 gap-4">
         {pictures.map((picture, index) => {
           return picture ? (
