@@ -51,7 +51,8 @@ model User {
 
 model Page {
   id            String  @id @default(cuid())
-  link          String?
+  randomId      String?  @unique
+  slug          String?  
   name          String
   about         String  @db.Text
   picture       String? @db.Text
@@ -63,6 +64,8 @@ model Page {
   publications  Publication[]
   pictures      Picture[]
   couple        Couple[]
+
+  @@unique([randomId, slug])
 }
 
 enum CoupleType {
@@ -97,13 +100,4 @@ model Picture {
   name          String @db.Text
   pageId        String
   page          Page    @relation(fields: [pageId], references: [id])
-}
-
-model Invite {
-  id         String   @id @default(cuid())  
-  email      String   
-  token      String   @unique  
-  expiresAt  DateTime 
-  createdAt  DateTime @default(now())
-  accepted   Boolean  @default(false) 
 }

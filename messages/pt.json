@@ -30,17 +30,23 @@
   "Dashboard": {
     "welcome": "Olá, ",
     "noPageFound": "Você ainda não tem uma página!",
+    "invite": {
+      "text": "Adicionar parceiro(a)",
+      "label": "Email do parceiro(a)"
+    },
     "button": {
+      "back": "Voltar",
+      "save": "Salvar",
       "create": "Criar",
       "edit": "Editar página",
       "show": "Visualizar página",
-      "invite": "Convidar parceiro(a)",
+      "invite": "Adicionar parceiro(a)",
       "qrcode": "Enviar QR Code"
     }
   },
   "Form": {
     "title": "Informações da página",
-    "assistantText": "Para criar sua página preencha o formulário",
+    "assistantText": "Preencha o formulário",
     "field": {
       "coupleName": "Nome do casal",
       "startDate": "Data de início",
@@ -65,6 +71,11 @@
     "photos": "Fotos",
     "feed": "Feed",
     "by": "por ",
-    "noPublications": "Nenhuma publicação até o momento 😪"
+    "noPublications": "Nenhuma publicação até o momento 😪",
+    "post": "Postar",
+    "placeholder": "Sua mensagem"
+  },
+  "Invitation": {
+    "text": "Você foi convidado para o Couplespace! Clique no link para ver sua página e faça login:"
   }
 }

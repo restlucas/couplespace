@@ -1,6 +1,5 @@
 "use client";
 
-import { getPage } from "@/services/couple";
 import { signOut, useSession } from "next-auth/react";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 
@@ -9,14 +8,12 @@ interface User {
   id: string;
   image: string;
   name: string;
-  page: {
-    id?: string;
-    link?: string;
-  };
+  pageLink: string;
 }
 
 interface UserContextType {
   user: User;
+  loading: boolean;
   makeLogout: () => void;
 }
 
@@ -28,32 +25,14 @@ export const UserContext = createContext({} as UserContextType);
 
 export function UserContextProvider({ children }: UserContextProviderProps) {
   const { data: session } = useSession();
+  const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User>({
     id: "",
     email: "",
     name: "",
     image: "",
-    page: {
-      id: "",
-      link: "",
-    },
+    pageLink: "",
   });
-
-  const getUser = async (user: User) => {
-    const response = await getPage(user.id);
-
-    if (response.type !== "error") {
-      const { id, link } = response.data;
-
-      setUser({
-        ...user,
-        page: {
-          id,
-          link,
-        },
-      });
-    }
-  };
 
   const makeLogout = async () => {
     setUser({
@@ -61,23 +40,36 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
       email: "",
       name: "",
       image: "",
-      page: {
-        id: "",
-        link: "",
-      },
+      pageLink: "",
     });
+    localStorage.removeItem("user");
 
     signOut({ callbackUrl: "/" });
   };
 
   useEffect(() => {
-    if (session && session.user) {
-      getUser(session.user);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
+
+    if (session && session.user) {
+      localStorage.setItem("user", JSON.stringify(session.user));
+      setUser(session.user);
+    }
+
+    setLoading(false);
   }, [session]);
 
+  // useEffect(() => {
+  //   if (session && session.user) {
+  //     localStorage.setItem("user", JSON.stringify(session.user));
+  //     getUser(session.user);
+  //   }
+  // }, [session]);
+
   return (
-    <UserContext.Provider value={{ user, makeLogout }}>
+    <UserContext.Provider value={{ user, loading, makeLogout }}>
       {children}
     </UserContext.Provider>
   );

@@ -14,10 +14,10 @@ export function Photos() {
 
   const pictures = Array(6)
     .fill(null)
-    .map((_, index) => content.pictures[index] || null);
+    .map((_, index) => content?.pictures[index] || null);
 
   return (
-    <div>
+    <div className="animate-fade-right">
       <h3 className="text-2xl font-bold mb-6 drop-shadow-lg">{t("photos")}</h3>
       <div className="grid grid-cols-3 grid-rows-2 lg:grid-cols-2 lg:grid-rows-3 gap-4">
         {pictures.map((picture, index) => {

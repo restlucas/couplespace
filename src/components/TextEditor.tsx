@@ -5,33 +5,52 @@ import StarterKit from "@tiptap/starter-kit";
 import Bold from "@tiptap/extension-bold";
 import Italic from "@tiptap/extension-italic";
 import Youtube from "@tiptap/extension-youtube";
-import { Dispatch, SetStateAction, useState } from "react";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { TextB, TextItalic, YoutubeLogo } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 
 export const TextEditor = ({
+  content,
   setContent,
 }: {
+  content: string;
   setContent: Dispatch<SetStateAction<string>>;
 }) => {
+  const [editorContent, setEditorContent] = useState(content);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalType, setModalType] = useState(""); // "youtube"
+  const [modalType, setModalType] = useState("");
   const [url, setUrl] = useState("");
+  const t = useTranslations("Page");
 
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Placeholder.configure({
+        placeholder: t("placeholder"),
+      }),
       Bold,
       Italic,
       Youtube.configure({
         controls: true,
       }),
     ],
-    content: "<p>Sua mensagem aqui...</p>",
+    content: "",
     onUpdate: ({ editor }) => {
-      setContent(editor.getHTML());
+      setEditorContent(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    setContent(editorContent);
+  }, [editorContent, setContent]);
+
+  useEffect(() => {
+    if (editor && content === "") {
+      editor.commands.clearContent(true);
+    }
+  }, [content, editor]);
 
   if (!editor) {
     return null;
@@ -69,7 +88,7 @@ export const TextEditor = ({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`w-10 h-10 flex items-center justify-center rounded-md ${
+          className={`w-7 h-7 flex items-center justify-center rounded-md ${
             editor.isActive("bold") ? "bg-foreground-light/50" : "bg-foreground"
           }`}
         >
@@ -78,7 +97,7 @@ export const TextEditor = ({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`w-10 h-10 flex items-center justify-center rounded-md ${
+          className={`w-7 h-7 flex items-center justify-center rounded-md ${
             editor.isActive("italic") ? "bg-foreground-light" : "bg-foreground"
           }`}
         >
@@ -87,7 +106,7 @@ export const TextEditor = ({
         <button
           type="button"
           onClick={() => openModal("youtube")}
-          className="w-10 h-10 flex items-center justify-center rounded-md bg-foreground"
+          className="w-7 h-7 flex items-center justify-center rounded-md bg-foreground"
         >
           <YoutubeLogo size={18} />
         </button>
@@ -130,7 +149,7 @@ export const TextEditor = ({
       )}
 
       {/* Editor Content */}
-      <div className="p-4 rounded-md bg-foreground outline-none">
+      <div className="max-w-[448px] text-white placeholder-white">
         <EditorContent editor={editor} className="outline-none" />
       </div>
     </div>

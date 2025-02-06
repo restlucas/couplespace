@@ -2,102 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { removeImage, updateImage, uploadImage } from "@/utils/firebaseStorage";
 import { sendEmail } from "@/utils/sendEmail";
-import { generateInviteToken } from "@/utils/generateInviteToken";
+import { generateId } from "@/utils/generateId";
+import { createSlug } from "@/utils/slugify";
+import { getTranslations } from "next-intl/server";
 
 async function getPage(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId");
-
-  if (!userId) {
-    return NextResponse.json(
-      { type: "error", message: "User ID is required" },
-      { status: 400 }
-    );
-  }
-
-  const page = await prisma.page.findFirst({
-    where: {
-      couple: {
-        some: {
-          userId,
-        },
-      },
-    },
-    select: {
-      id: true,
-      link: true,
-    },
-  });
-
-  let dataValue: { id: string | null; link: string | null } = {
-    id: "",
-    link: "",
-  };
-
-  if (page) {
-    dataValue = page;
-  }
-
-  return NextResponse.json({
-    type: "success",
-    message: "Page retrieved successfully",
-    data: dataValue,
-  });
-}
-
-async function getPageDetails(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const pageId = searchParams.get("pageId");
-  const userId = searchParams.get("userId");
-
-  const id = pageId || userId;
-
-  if (!id) {
-    return NextResponse.json(
-      { type: "error", message: "User ID or Couple ID is required" },
-      { status: 400 }
-    );
-  }
-
-  console.log(id);
-
   try {
-    const whereCondition = pageId
-      ? { id: pageId }
-      : userId
-      ? {
-          couple: {
-            some: {
-              userId: userId,
-            },
-          },
-        }
-      : undefined;
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { type: "error", message: "User ID is required" },
+        { status: 400 }
+      );
+    }
 
     const page = await prisma.page.findFirst({
-      where: whereCondition,
+      where: {
+        couple: {
+          some: {
+            userId,
+          },
+        },
+      },
       select: {
-        id: true,
-        link: true,
         name: true,
         date: true,
         about: true,
         picture: true,
-        publications: {
-          select: {
-            id: true,
-            message: true,
-            createdAt: true,
-            user: {
-              select: {
-                name: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
         pictures: {
           select: {
             url: true,
@@ -106,6 +39,53 @@ async function getPageDetails(request: Request) {
         },
       },
     });
+
+    return NextResponse.json({
+      type: "success",
+      message: "Page retrieved successfully",
+      data: page,
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in getPage function:", error);
+      return NextResponse.json(
+        {
+          type: "error",
+          message: "Internal Server Error",
+          details: error.message,
+        },
+        { status: 500 }
+      );
+    }
+  }
+}
+
+async function getPageLink(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { type: "error", message: "User ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const page = (await prisma.page.findFirst({
+      where: {
+        couple: {
+          some: {
+            userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        randomId: true,
+        slug: true,
+      },
+    })) as { randomId: string; slug: string };
 
     if (!page) {
       return NextResponse.json(
@@ -117,47 +97,45 @@ async function getPageDetails(request: Request) {
     return NextResponse.json({
       type: "success",
       message: "Page retrieved successfully",
-      data: page,
+      link: `${page.randomId}/${page.slug}`,
     });
-  } catch (error) {
-    console.error("Error fetching page:", error);
-    return NextResponse.json(
-      { type: "error", message: "Error fetching page" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error in getPageLink function:", error);
+      return NextResponse.json(
+        {
+          type: "error",
+          message: "Internal Server Error",
+          details: error.message,
+        },
+        { status: 500 }
+      );
+    }
   }
 }
 
-async function getPartnerEmail(request: Request) {
+async function getPageDetails(request: Request) {
   const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId") as string;
+  const pageRandomId = searchParams.get("pageRandomId") as string;
+  const pageSlug = searchParams.get("pageSlug");
 
-  const { id: pageId } = await prisma.page.findFirstOrThrow({
+  const page = await prisma.page.findFirst({
     where: {
-      couple: {
-        some: {
-          userId,
-        },
-      },
+      randomId: pageRandomId,
+      slug: pageSlug,
     },
     select: {
       id: true,
-    },
-  });
-
-  const couple = await prisma.couple.findFirst({
-    where: {
-      pageId,
-      userId: {
-        not: userId,
-      },
-    },
-    select: {
-      id: true,
-      user: {
+      randomId: true,
+      slug: true,
+      name: true,
+      date: true,
+      about: true,
+      picture: true,
+      pictures: {
         select: {
+          url: true,
           name: true,
-          email: true,
         },
       },
     },
@@ -165,14 +143,120 @@ async function getPartnerEmail(request: Request) {
 
   return NextResponse.json({
     type: "success",
-    message: "Partner email retrieved successfully",
-    data: couple,
+    message: "Page retrieved successfully",
+    data: page,
+  });
+
+  // if (!id) {
+  //   return NextResponse.json(
+  //     { type: "error", message: "User ID or Couple ID is required" },
+  //     { status: 400 }
+  //   );
+  // }
+
+  // try {
+  //   const whereCondition = pageId
+  //     ? { id: pageId }
+  //     : userId
+  //     ? {
+  //         couple: {
+  //           some: {
+  //             userId: userId,
+  //           },
+  //         },
+  //       }
+  //     : undefined;
+
+  //   const page = await prisma.page.findFirst({
+  //     where: whereCondition,
+  //     select: {
+  //       id: true,
+  //       link: true,
+  //       name: true,
+  //       date: true,
+  //       about: true,
+  //       picture: true,
+  //       publications: {
+  //         select: {
+  //           id: true,
+  //           message: true,
+  //           createdAt: true,
+  //           user: {
+  //             select: {
+  //               name: true,
+  //             },
+  //           },
+  //         },
+  //         orderBy: {
+  //           createdAt: "desc",
+  //         },
+  //       },
+  //       pictures: {
+  //         select: {
+  //           url: true,
+  //           name: true,
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   if (!page) {
+  //     return NextResponse.json(
+  //       { type: "error", message: "Page not found" },
+  //       { status: 404 }
+  //     );
+  //   }
+
+  //   return NextResponse.json({
+  //     type: "success",
+  //     message: "Page retrieved successfully",
+  //     data: page,
+  //   });
+  // } catch (error) {
+  //   console.error("Error fetching page:", error);
+  //   return NextResponse.json(
+  //     { type: "error", message: "Error fetching page" },
+  //     { status: 500 }
+  //   );
+  // }
+}
+
+async function getPagePublications(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const pageRandomId = searchParams.get("pageRandomId") as string;
+  const pageSlug = searchParams.get("pageSlug") as string;
+
+  const page = await prisma.publication.findMany({
+    where: {
+      page: {
+        randomId: pageRandomId,
+        slug: pageSlug,
+      },
+    },
+    select: {
+      id: true,
+      message: true,
+      createdAt: true,
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return NextResponse.json({
+    type: "success",
+    message: "Page retrieved successfully",
+    data: page,
   });
 }
 
 async function createPage(request: Request) {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL;
     const formData = await request.formData();
     const userId = formData.get("userId") as string;
     const name = formData.get("name") as string;
@@ -235,14 +319,16 @@ async function createPage(request: Request) {
       })
     );
 
-    const pageLink = `${baseUrl}/${pageId}`;
+    const randomId = generateId();
+    const slug = createSlug(name);
 
     await prisma.page.update({
       where: {
         id: pageId,
       },
       data: {
-        link: pageLink,
+        randomId,
+        slug,
       },
     });
 
@@ -250,7 +336,7 @@ async function createPage(request: Request) {
       type: "success",
       message: "Success on generate new couple page",
       code: 202,
-      link: pageLink,
+      link: `${randomId}/${slug}`,
     });
   } catch (error) {
     console.error("Error generating page:", error);
@@ -301,79 +387,46 @@ async function createPublication(request: Request) {
 }
 
 async function inviteUser(request: Request) {
-  const { userEmail: email, userId } = await request.json();
+  const t = await getTranslations("Invitation");
+  const { userEmail: email, userId, locale } = await request.json();
 
-  const inviteToken = generateInviteToken();
-
-  const { pageId } = await prisma.couple.findFirstOrThrow({
+  const {
+    id: pageId,
+    randomId: pageRandomId,
+    slug: pageSlug,
+  } = await prisma.page.findFirstOrThrow({
     where: {
-      userId,
+      couple: {
+        some: {
+          userId,
+        },
+      },
     },
     select: {
-      pageId: true,
+      id: true,
+      randomId: true,
+      slug: true,
     },
   });
 
-  await prisma.invite.create({
-    data: {
-      email,
-      token: inviteToken,
-      expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    },
-  });
-
-  const inviteLink = `${process.env.NEXTAUTH_URL}/accept-invite?token=${inviteToken}&pageId=${pageId}`;
-  await sendEmail(
-    email,
-    `Você foi convidado para o Couplespace! Clique no link para aceitar o convite: ${inviteLink}`
-  );
-
-  return NextResponse.json({
-    type: "success",
-    message: "Success on inviting user",
-    code: 202,
-  });
-}
-
-async function acceptInvite(request: Request) {
-  const { token, pageId } = await request.json();
-  const invite = await prisma.invite.findUnique({
-    where: { token },
-    select: { email: true, expiresAt: true },
-  });
-
-  if (!invite) {
-    throw new Error("Convite inválido.");
-  }
-
-  if (invite.expiresAt < new Date()) {
-    throw new Error("Convite expirado.");
-  }
-
-  // Atualizar o convite como aceito
-  await prisma.invite.update({
-    where: { token },
-    data: { accepted: true },
-  });
-
-  // Criar o usuário no banco apenas com o email
   const user = await prisma.user.create({
-    data: { email: invite.email },
+    data: { email },
   });
 
-  // Criar o registro na tabela Couple
   await prisma.couple.create({
     data: {
       pageId,
       userId: user.id,
-      type: "PARTNER", // Define como parceiro, não como proprietário
+      type: "PARTNER",
     },
   });
 
-  // return user;
+  const inviteLink = `${process.env.NEXTAUTH_URL}/${locale}/${pageRandomId}/${pageSlug}`;
+  await sendEmail(email, `${t("text")} ${inviteLink}`);
+
   return NextResponse.json({
     type: "success",
-    message: "Success on accepting invite",
+    message: "Success on inviting user",
     code: 202,
   });
 }
@@ -525,6 +578,10 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action");
 
+  if (action === "getPageLink") {
+    return await getPageLink(request);
+  }
+
   if (action === "getPage") {
     return await getPage(request);
   }
@@ -533,8 +590,8 @@ export async function GET(request: NextRequest) {
     return await getPageDetails(request);
   }
 
-  if (action === "getPartnerEmail") {
-    return await getPartnerEmail(request);
+  if (action === "getPagePublications") {
+    return await getPagePublications(request);
   }
 
   return NextResponse.json(
@@ -562,10 +619,6 @@ export async function POST(request: NextRequest) {
 
     if (action === "inviteUser") {
       return await inviteUser(request);
-    }
-
-    if (action === "acceptInvite") {
-      return await acceptInvite(request);
     }
   } catch (error) {
     console.error("Error on post action:", error);

@@ -4,20 +4,42 @@ import { PageContext } from "@/contexts/PageContext";
 import { timeSinceRecord } from "@/utils/formatDate";
 import { useLocale, useTranslations } from "next-intl";
 import { useContext } from "react";
+import { CreatePublication } from "./create-publication";
+import { UserContext } from "@/contexts/UserContext";
+
+const getPathWithoutLocale = (path: string) => {
+  const parts = path.split("/").filter(Boolean);
+  return parts.slice(-2).join("/");
+};
+
+const validateIsUserAuthorizedToPublish = (pageLink: string) => {
+  const currentPath = getPathWithoutLocale(window.location.pathname);
+  const userPath = getPathWithoutLocale(pageLink);
+
+  return currentPath === userPath;
+};
 
 export function Feed() {
-  const { content } = useContext(PageContext);
+  const { publications } = useContext(PageContext);
+  const { user } = useContext(UserContext);
   const locale = useLocale();
   const t = useTranslations("Page");
+
+  const isAuthorizedToPublish = validateIsUserAuthorizedToPublish(
+    user.pageLink
+  );
 
   return (
     <div className="animate-fade-right">
       <div className="w-full flex items-center justify-start mb-6">
         <h3 className="text-2xl font-bold drop-shadow-lg">{t("feed")}</h3>
       </div>
+
+      {isAuthorizedToPublish && <CreatePublication />}
+
       <div className="flex flex-col gap-8">
-        {content.publications.length > 0 ? (
-          content.publications.map((publication) => {
+        {publications.length > 0 ? (
+          publications.map((publication) => {
             return (
               <div
                 key={publication.id}

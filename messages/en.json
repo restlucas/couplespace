@@ -30,17 +30,23 @@
   "Dashboard": {
     "welcome": "Hello, ",
     "noPageFound": "You don't have a page yet!",
+    "invite": {
+      "text": "Add partner",
+      "label": "Partner email"
+    },
     "button": {
+      "back": "Back",
+      "save": "Save",
       "create": "Create",
       "edit": "Edit page",
       "show": "View page",
-      "invite": "Invite partner",
+      "invite": "Add partner",
       "qrcode": "Send QR Code"
     }
   },
   "Form": {
     "title": "Page info",
-    "assistantText": "To create your page, fill in the form",
+    "assistantText": "Fill in the form",
     "field": {
       "coupleName": "Couple's name",
       "startDate": "Start date",
@@ -65,6 +71,11 @@
     "photos": "Photos",
     "feed": "Feed",
     "by": "by ",
-    "noPublications": "No publications yet 😪"
+    "noPublications": "No publications yet 😪",
+    "post": "Post",
+    "placeholder": "Your message"
+  },
+  "Invitation": {
+    "text": "You have been invited to Couplespace! Click the link to check your couple page and make login:"
   }
 }

@@ -1,11 +1,11 @@
-import { Form } from "@/app/[locale]/(home)/dashboard/create/page";
 import { CameraPlus, Trash } from "@phosphor-icons/react";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
+import { FormAction } from "./pageForm";
 
 interface PictureGridProps {
   pictures?: File[];
-  setForm: Dispatch<SetStateAction<Form>>;
+  dispatchForm: Dispatch<FormAction>;
 }
 
 type Preview = { name: string; url: string };
@@ -46,7 +46,7 @@ const EmptyPreview = ({ htmlFor }: EmptyPreviewProps) => (
   </label>
 );
 
-export function PicturesGrid({ pictures, setForm }: PictureGridProps) {
+export function PicturesGrid({ pictures, dispatchForm }: PictureGridProps) {
   const [imagesPreview, setImagesPreview] = useState<(Preview | null)[]>([
     null,
     null,
@@ -84,19 +84,25 @@ export function PicturesGrid({ pictures, setForm }: PictureGridProps) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    setForm((prevState) => ({
-      ...prevState,
-      pictures: [...prevState.pictures, ...files],
-    }));
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "pictures",
+      value: [...(pictures || []), ...files],
+    });
 
     processFiles(files);
   };
 
   const removeImage = (imageName: string) => {
-    setForm((prevState) => ({
-      ...prevState,
-      pictures: prevState.pictures.filter((image) => image.name !== imageName),
-    }));
+    const updatedPictures = (pictures || []).filter(
+      (image) => image.name !== imageName
+    );
+
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "pictures",
+      value: updatedPictures,
+    });
 
     const filteredImages = imagesPreview.filter(
       (image) => image && image.name !== imageName

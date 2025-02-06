@@ -1,23 +1,24 @@
-import { Form } from "@/app/[locale]/(home)/dashboard/create/page";
 import { CameraPlus } from "@phosphor-icons/react";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
+import { FormAction } from "./pageForm";
 
 interface PictureProps {
-  picture?: File | null | undefined;
-  setForm: Dispatch<SetStateAction<Form>>;
+  picture: File | null | undefined;
+  dispatchForm: Dispatch<FormAction>;
 }
 
-export function Picture({ picture, setForm }: PictureProps) {
+export function Picture({ picture, dispatchForm }: PictureProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    setForm((prevState) => ({
-      ...prevState,
-      picture: file,
-    }));
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "picture",
+      value: file || null,
+    });
 
     if (file) {
       const reader = new FileReader();

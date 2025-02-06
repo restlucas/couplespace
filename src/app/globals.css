@@ -16,6 +16,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--foreground);
   font-family: var(----font-bree-serif-sans), Arial, Helvetica, sans-serif;
@@ -30,6 +34,18 @@ body {
   );
   background-size: 400% 400%;
   animation: bg 12s ease infinite;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
 }
 
 @keyframes bg {
@@ -48,3 +64,17 @@ iframe {
   width: 100% !important;
   max-width: 100%;
 }
+
+/* ::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: #171717;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 9999px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+} */

@@ -28,10 +28,16 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url === baseUrl || url.startsWith(baseUrl)) {
-        return `${baseUrl}/dashboard`;
+      if (url.startsWith(baseUrl)) {
+        if (url.endsWith("/login")) {
+          const locale = url.split("/")[3];
+          return `${baseUrl}/${locale}/dashboard`;
+        } else {
+          return url;
+        }
+      } else {
+        return baseUrl;
       }
-      return url;
     },
 
     async jwt({ token, account, user }) {
@@ -48,6 +54,24 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
+
+        const userPage = await prisma.page.findFirst({
+          where: {
+            couple: {
+              some: {
+                userId: token.id as string,
+              },
+            },
+          },
+          select: {
+            randomId: true,
+            slug: true,
+          },
+        });
+
+        session.user.pageLink = userPage
+          ? `/${userPage.randomId}/${userPage.slug}`
+          : "";
       }
 
       return session;

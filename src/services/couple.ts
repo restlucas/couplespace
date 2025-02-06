@@ -1,9 +1,9 @@
 const baseUrl = typeof window === "undefined" ? process.env.NEXTAUTH_URL : "";
 
-export const getPage = async (userId: string) => {
+export const getPageLink = async (userId: string) => {
   try {
     const response = await fetch(
-      `${baseUrl}/api/couple?action=getPage&userId=${encodeURIComponent(
+      `${baseUrl}/api/couple?action=getPageLink&userId=${encodeURIComponent(
         userId
       )}`,
       {
@@ -28,15 +28,74 @@ export const getPage = async (userId: string) => {
   }
 };
 
-export const getPageDetails = async (identifier: {
-  key: string;
-  value: string;
-}) => {
+export const getPage = async (userId: string) => {
   try {
     const response = await fetch(
-      `${baseUrl}/api/couple?action=getPageDetails&${
-        identifier.key
-      }=${encodeURIComponent(identifier.value)}`,
+      `${baseUrl}/api/couple?action=getPage&userId=${encodeURIComponent(
+        userId
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on fetch page:", error);
+      return {
+        type: "error",
+        message: "Error on fetch page",
+      };
+    } else {
+      console.error("Unknown error", error);
+    }
+  }
+};
+
+export const getPageDetails = async (
+  pageRandomId: string,
+  pageSlug: string
+) => {
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/couple?action=getPageDetails&pageRandomId=${pageRandomId}&pageSlug=${pageSlug}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const { data } = await response.json();
+
+    return data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error on fetch page:", error);
+      return {
+        type: "error",
+        message: "Error on fetch page",
+      };
+    } else {
+      console.error("Unknown error", error);
+    }
+  }
+};
+
+export const getPagePublications = async (
+  pageRandomId: string,
+  pageSlug: string
+) => {
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/couple?action=getPagePublications&pageRandomId=${pageRandomId}&pageSlug=${pageSlug}`,
       {
         method: "GET",
         headers: {
@@ -166,6 +225,7 @@ export const updatePage = async (formData: FormData) => {
 };
 
 export const inviteUser = async (data: {
+  locale: string;
   userEmail: string;
   userId: string;
 }) => {

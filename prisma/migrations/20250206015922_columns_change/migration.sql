@@ -33,7 +33,8 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Page" (
     "id" TEXT NOT NULL,
-    "link" TEXT,
+    "randomId" TEXT,
+    "slug" TEXT,
     "name" TEXT NOT NULL,
     "about" TEXT NOT NULL,
     "picture" TEXT,
@@ -75,18 +76,6 @@ CREATE TABLE "Picture" (
     CONSTRAINT "Picture_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Invite" (
-    "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
-    "expiresAt" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "accepted" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "Invite_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_user_id_key" ON "Account"("user_id");
 
@@ -97,10 +86,13 @@ CREATE UNIQUE INDEX "Account_provider_id_provider_account_id_key" ON "Account"("
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Couple_userId_key" ON "Couple"("userId");
+CREATE UNIQUE INDEX "Page_randomId_key" ON "Page"("randomId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Invite_token_key" ON "Invite"("token");
+CREATE UNIQUE INDEX "Page_randomId_slug_key" ON "Page"("randomId", "slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Couple_userId_key" ON "Couple"("userId");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
