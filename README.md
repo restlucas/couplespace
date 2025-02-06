@@ -27,9 +27,10 @@ A web app for couples to show their love. Make declarations with words, images, 
 
 ### Prerequisites
 
+- Node installed
 - NPM or Yarn
 
-### Passos para rodar o backend
+### Steps to run the system
 
 1. Clone the repository:
 
@@ -55,3 +56,11 @@ A web app for couples to show their love. Make declarations with words, images, 
    ```bash
    npm run dev
    ```
+
+---
+
+## Author
+
+This project is developed and maintained by [Lucas Oliveira](https://www.linkedin.com/in/restlucas).
+
+Feel free to connect with me on LinkedIn for more information or to collaborate on other projects!
