@@ -13,11 +13,12 @@ const bree_serif = Bree_Serif({
 
 export default async function RootLayout({
   children,
-  params: { locale },
+  params,
 }: Readonly<{
   children: React.ReactNode;
   params: { locale: string };
 }>) {
+  const { locale } = params;
   const messages = await getMessages();
 
   return (
