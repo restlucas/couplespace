@@ -46,6 +46,7 @@ A web app for couples to show their love. Make declarations with words, images, 
    ```
 
 3. Set up MySQL Database:
+   Make sure that the `.env` file is configured with the correct values (check .env.example) for your database connection before running the following commands:
 
    ```bash
    npx prisma generate
